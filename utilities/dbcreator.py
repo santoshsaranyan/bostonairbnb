@@ -26,7 +26,12 @@ def create_listings_table(engine) -> None:
     
     :param engine: SQLAlchemy engine object.
     """
+    
+    # Note: MySQL does not throw an error if the table already exists during creating with the IF NOT EXISTS clause.
+    # But, we still check for its existence anyway to avoid any unforseen bugs, as this will be used as part of an automated script.
+    
     table_name = "listings"
+    
     if table_exists(engine, table_name):
         print(f"Table '{table_name}' exists.")
         
@@ -78,7 +83,12 @@ def create_reviews_table(engine) -> None:
     
     :param engine: SQLAlchemy engine object.
     """
+    
+    # Note: MySQL does not throw an error if the table already exists during creating with the IF NOT EXISTS clause.
+    # But, we still check for its existence anyway to avoid any unforseen bugs, as this will be used as part of an automated script.
+    
     table_name = "reviews"
+    
     if table_exists(engine, table_name):
         print(f"Table '{table_name}' exists.")
         
@@ -109,7 +119,12 @@ def create_hosts_table(engine) -> None:
     
     :param engine: SQLAlchemy engine object.
     """
+    
+    # Note: MySQL does not throw an error if the table already exists during creating with the IF NOT EXISTS clause.
+    # But, we still check for its existence anyway to avoid any unforseen bugs, as this will be used as part of an automated script.
+    
     table_name = "hosts"
+    
     if table_exists(engine, table_name):
         print(f"Table '{table_name}' exists.")
         
@@ -151,7 +166,11 @@ def create_locations_table(engine) -> None:
     :param engine: SQLAlchemy engine object.
     """
     
+    # Note: MySQL does not throw an error if the table already exists during creating with the IF NOT EXISTS clause.
+    # But, we still check for its existence anyway to avoid any unforseen bugs, as this will be used as part of an automated script.
+    
     table_name = "locations"
+    
     if table_exists(engine, table_name):
         print(f"Table '{table_name}' exists.")
         
@@ -177,9 +196,13 @@ def create_availability_table(engine) -> None:
     Creates the availability table in the database.
     
     :param engine: SQLAlchemy engine object.
-    """
+    """ 
+    
+    # Note: MySQL does not throw an error if the table already exists during creating with the IF NOT EXISTS clause.
+    # But, we still check for its existence anyway to avoid any unforseen bugs, as this will be used as part of an automated script.
     
     table_name = "availability"
+    
     if table_exists(engine, table_name):
         print(f"Table '{table_name}' exists.")
         
