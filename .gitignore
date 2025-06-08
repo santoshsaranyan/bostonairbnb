@@ -7,9 +7,9 @@ __pycache__/
 *.so
 
 # Files
-.csv
-.csv.gz
-.geojson
+*.csv
+*.csv.gz
+*.geojson
 
 # Distribution / packaging
 .Python
