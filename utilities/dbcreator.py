@@ -58,16 +58,16 @@ def create_listings_table(engine) -> None:
     # Note: MySQL does not throw an error if the table already exists during table creation with the IF NOT EXISTS clause.
     # But, we still check for its existence anyway to log what is happening and also to avoid any unforseen bugs, as this will be used as part of an automated script.
      
-    table_name = "listings"
+    tableName = "listings"
     
-    if table_exists(engine, table_name):
-        logging.info(f"Table '{table_name}' exists.")
+    if table_exists(engine, tableName):
+        logging.info(f"Table '{tableName}' exists.")
         
     else:
-        logging.info(f"Table '{table_name}' does not exist.")
+        logging.info(f"Table '{tableName}' does not exist.")
     
         listingsSchemaQuery = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
+        CREATE TABLE IF NOT EXISTS {tableName} (
             listing_id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             description TEXT,
@@ -119,16 +119,16 @@ def create_reviews_table(engine) -> None:
     # Note: MySQL does not throw an error if the table already exists during table creation with the IF NOT EXISTS clause.
     # But, we still check for its existence anyway to log what is happening and also to avoid any unforseen bugs, as this will be used as part of an automated script.
    
-    table_name = "reviews"
+    tableName = "reviews"
     
-    if table_exists(engine, table_name):
-        logging.info(f"Table '{table_name}' exists.")
+    if table_exists(engine, tableName):
+        logging.info(f"Table '{tableName}' exists.")
         
     else:
-        logging.info(f"Table '{table_name}' does not exist.")
+        logging.info(f"Table '{tableName}' does not exist.")
     
         reviewsSchemaQuery = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
+        CREATE TABLE IF NOT EXISTS {tableName} (
             review_id INTEGER PRIMARY KEY,
             listing_id INTEGER NOT NULL,
             date DATE NOT NULL,
@@ -160,16 +160,16 @@ def create_hosts_table(engine) -> None:
     # But, we still check for its existence anyway to log what is happening and also to avoid any unforseen bugs, as this will be used as part of an automated script.
   
     
-    table_name = "hosts"
+    tableName = "hosts"
     
-    if table_exists(engine, table_name):
-        logging.info(f"Table '{table_name}' exists.")
+    if table_exists(engine, tableName):
+        logging.info(f"Table '{tableName}' exists.")
         
     else:
-        logging.info(f"Table '{table_name}' does not exist.")
+        logging.info(f"Table '{tableName}' does not exist.")
         
         hostsSchemaQuery = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
+        CREATE TABLE IF NOT EXISTS {tableName} (
             host_id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             host_url TEXT NOT NULL,
@@ -210,15 +210,15 @@ def create_locations_table(engine) -> None:
     # Note: MySQL does not throw an error if the table already exists during table creation with the IF NOT EXISTS clause.
     # But, we still check for its existence anyway to log what is happening and also to avoid any unforseen bugs, as this will be used as part of an automated script.
     
-    table_name = "locations"
+    tableName = "locations"
     
-    if table_exists(engine, table_name):
-        logging.info(f"Table '{table_name}' exists.")
+    if table_exists(engine, tableName):
+        logging.info(f"Table '{tableName}' exists.")
         
     else:
-        logging.info(f"Table '{table_name}' does not exist.")
+        logging.info(f"Table '{tableName}' does not exist.")
         locationsSchemaQuery = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
+        CREATE TABLE IF NOT EXISTS {tableName} (
             location_id INTEGER PRIMARY KEY,
             location TEXT NOT NULL,
             neighborhood TEXT
@@ -245,16 +245,16 @@ def create_availability_table(engine) -> None:
     # Note: MySQL does not throw an error if the table already exists during table creation with the IF NOT EXISTS clause.
     # But, we still check for its existence anyway to log what is happening and also to avoid any unforseen bugs, as this will be used as part of an automated script.
    
-    table_name = "availability"
+    tableName = "availability"
     
-    if table_exists(engine, table_name):
-        logging.info(f"Table '{table_name}' exists.")
+    if table_exists(engine, tableName):
+        logging.info(f"Table '{tableName}' exists.")
         
     else:
-        logging.info(f"Table '{table_name}' does not exist.")
+        logging.info(f"Table '{tableName}' does not exist.")
     
         availabilitySchemaQuery = f"""
-        CREATE TABLE IF NOT EXISTS {table_name} (
+        CREATE TABLE IF NOT EXISTS {tableName} (
             listing_id INTEGER NOT NULL,
             date DATE NOT NULL,
             available BOOLEAN NOT NULL,
@@ -321,35 +321,40 @@ def insert_data_to_table(engine) -> None:
     if not listingsData.empty:
         listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
         logging.info("Listings data inserted successfully.")
+        
     if not reviewsData.empty:
         reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
         logging.info("Reviews data inserted successfully.")
+        
     if not hostsData.empty:
         hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
         logging.info("Hosts data inserted successfully.")
+        
     if not locationsData.empty:
         locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
         logging.info("Locations data inserted successfully.")
+        
     if not availabilityData.empty:
         availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
         logging.info("Availability data inserted successfully.")
+        
     else:
         logging.info("No data to insert into the database.")
 
 
 
-def table_exists(engine, table_name: str) -> bool:
+def table_exists(engine, tableName: str) -> bool:
     """Checks if a table exists in the database.
 
     Parameters:
         engine: SQLAlchemy engine object.
-        table_name: Name of the table to check.
+        tableName: Name of the table to check.
 
     Returns:
         True if the table exists, False otherwise.
     """
     inspector = inspect(engine)
-    return inspector.has_table(table_name)
+    return inspector.has_table(tableName)
     
 
 
