@@ -2,9 +2,27 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine, inspect
 import logging
+from dotenv import load_dotenv
+import os
+
+# Set the path to the .env file
+env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+
+# Load the environment variables from the .env file
+load_dotenv(dotenv_path=env_path)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Get database credentials from environment variables
+user = os.getenv('user')
+password = os.getenv('password')
+db_name = os.getenv('db_name')
+
+# Check if the environment variables are set
+if not user or not password or not db_name:
+    raise ValueError("Database credentials are not set in the .env file.")
+
 
 """
 This script creates a MySQL database and its tables, reads data from CSV files, and inserts the data into the database.
@@ -14,7 +32,7 @@ It uses SQLAlchemy for database operations and pandas for data manipulation.
 def main() -> None:
     
     # Creates a connection to a MySQL database.
-    mySQLEngine = create_engine('mysql+pymysql://user:password@localhost/db_name', echo=True)
+    mySQLEngine = create_engine(f'mysql+pymysql://{user}:{password}@localhost/{db_name}', echo=True)
     
     # Create the database tables.
     create_all_tables(mySQLEngine)
@@ -260,6 +278,7 @@ def create_availability_table(engine) -> None:
             available BOOLEAN NOT NULL,
             minimum_nights INTEGER DEFAULT 1,
             maximum_nights INTEGER DEFAULT 365,
+            price FLOAT CHECK(price >= 0),
             PRIMARY KEY (listing_id, date),
             FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
         );
