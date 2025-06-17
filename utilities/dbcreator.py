@@ -100,6 +100,7 @@ def create_listings_table(engine) -> None:
             room_type TEXT,
             accommodates INTEGER,
             bathrooms FLOAT,
+            bathroom_type TEXT,
             bedrooms INTEGER,
             beds INTEGER,
             amenities TEXT,
