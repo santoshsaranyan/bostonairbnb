@@ -161,6 +161,77 @@ def create_reviews_table(engine) -> None:
         with engine.connect() as connection:
             connection.execute(reviewsSchemaQuery)
             logging.info("Reviews table created successfully.")
+            
+
+def create_amenities_table(engine) -> None:
+    """
+    Creates the amenities table in the database.
+    
+    Parameters:
+        engine: SQLAlchemy engine object.
+    
+    Returns:
+        None
+    """
+    
+    # Note: MySQL does not throw an error if the table already exists during table creation with the IF NOT EXISTS clause.
+    # But, we still check for its existence anyway to log what is happening and also to avoid any unforseen bugs, as this will be used as part of an automated script.
+   
+    tableName = "amenities"
+    
+    if table_exists(engine, tableName):
+        logging.info(f"Table '{tableName}' exists.")
+        
+    else:
+        logging.info(f"Table '{tableName}' does not exist.")
+    
+        reviewsSchemaQuery = f"""
+        CREATE TABLE IF NOT EXISTS {tableName} (
+            amenities_id INTEGER PRIMARY KEY,
+            amenity TEXT NOT NULL
+        );
+        """
+        
+        with engine.connect() as connection:
+            connection.execute(reviewsSchemaQuery)
+            logging.info(f"{tableName} table created successfully.")
+            
+
+def create_listing_amenities_table(engine) -> None:
+    """
+    Creates the listing-amenities table in the database.
+    
+    Parameters:
+        engine: SQLAlchemy engine object.
+    
+    Returns:
+        None
+    """
+    
+    # Note: MySQL does not throw an error if the table already exists during table creation with the IF NOT EXISTS clause.
+    # But, we still check for its existence anyway to log what is happening and also to avoid any unforseen bugs, as this will be used as part of an automated script.
+   
+    tableName = "listing_amenities"
+    
+    if table_exists(engine, tableName):
+        logging.info(f"Table '{tableName}' exists.")
+        
+    else:
+        logging.info(f"Table '{tableName}' does not exist.")
+    
+        reviewsSchemaQuery = f"""
+        CREATE TABLE IF NOT EXISTS {tableName} (
+            listing_id INTEGER NOT NULL,
+            amenities_id INTEGER NOT NULL,
+            PRIMARY KEY (listing_id, amenities_id),
+            FOREIGN KEY (listing_id) REFERENCES listings(listing_id),
+            FOREIGN KEY (amenities_id) REFERENCES amenities(amenities_id)
+        );
+        """
+        
+        with engine.connect() as connection:
+            connection.execute(reviewsSchemaQuery)
+            logging.info(f"{tableName} table created successfully.")
     
 
 
@@ -310,6 +381,8 @@ def create_all_tables(engine) -> None:
     create_listings_table(engine)
     create_reviews_table(engine)
     create_availability_table(engine)
+    create_amenities_table(engine)
+    create_listing_amenities_table(engine)
     
     logging.info("All tables created successfully.")
     
@@ -333,6 +406,8 @@ def insert_data_to_table(engine) -> None:
     hostsData = read_data('cleaned_hosts.csv')
     locationsData = read_data('cleaned_locations.csv')
     availabilityData = read_data('cleaned_availability.csv')
+    amenitiesData = read_data('cleaned_amenities.csv')
+    listingAmenitiesData = read_data('cleaned_listing_amenities.csv')
     logging.info("Data read successfully.")
     
     
@@ -357,6 +432,14 @@ def insert_data_to_table(engine) -> None:
     if not availabilityData.empty:
         availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
         logging.info("Availability data inserted successfully.")
+
+    if not amenitiesData.empty:
+        amenitiesData.to_sql('amenities', con=engine, if_exists='append', index=False)
+        logging.info("Amenities data inserted successfully.")
+    
+    if not listingAmenitiesData.empty:
+        listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)
+        logging.info("Listing amenities data inserted successfully.")
         
     else:
         logging.info("No data to insert into the database.")
