@@ -104,6 +104,7 @@ def create_listings_table(engine) -> None:
             bedrooms INTEGER,
             beds INTEGER,
             amenities TEXT,
+            amenity_categories TEXT,
             license TEXT,
             overall_rating FLOAT CHECK(overall_rating >= 0 AND overall_rating <= 5),
             accuracy_rating FLOAT CHECK(accuracy_rating >= 0 AND accuracy_rating <= 5),
@@ -261,10 +262,10 @@ def create_hosts_table(engine) -> None:
         hostsSchemaQuery = f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
             host_id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL,
+            host_name TEXT NOT NULL,
             host_url TEXT NOT NULL,
             host_since TEXT,
-            host_location_id TEXT,
+            location_id TEXT,
             host_about TEXT,
             host_response_time TEXT,
             host_response_rate FLOAT CHECK(host_response_rate >= 0 AND host_response_rate <= 100),
@@ -272,11 +273,11 @@ def create_hosts_table(engine) -> None:
             host_is_superhost BOOLEAN,
             host_thumbnail_url TEXT,
             host_picture_url TEXT,
-            host_listings_count INTEGER DEFAULT 0,
+            host_total_listings_count INTEGER DEFAULT 0,
             host_verifications TEXT,
             host_has_profile_pic BOOLEAN,
             host_identity_verified BOOLEAN,
-            FOREIGN KEY (host_location_id) REFERENCES locations(location_id)
+            FOREIGN KEY (location_id) REFERENCES locations(location_id)
         );
         """
         
