@@ -10,6 +10,7 @@ __pycache__/
 *.csv
 *.csv.gz
 *.geojson
+*.ipynb
 
 # Distribution / packaging
 .Python

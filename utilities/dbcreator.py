@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, inspect
 import logging
 from dotenv import load_dotenv
 import os
+import time
 
 # Set the path to the .env file
 env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
@@ -31,6 +32,8 @@ It uses SQLAlchemy for database operations and pandas for data manipulation.
 
 def main() -> None:
     
+    start = time.time()
+    
     # Creates a connection to a MySQL database.
     mySQLEngine = create_engine(f'mysql+pymysql://{user}:{password}@localhost/{db_name}', echo=True)
     
@@ -39,6 +42,10 @@ def main() -> None:
     
     # Read data from CSV files and insert it into the database.
     insert_data_to_table(mySQLEngine)
+    
+    end = time.time()
+    
+    logging.info(f"Script executed in {end - start:.2f} seconds.")
     
     
 
@@ -50,7 +57,7 @@ def read_data(filePath: str) -> pd.DataFrame:
         filePath: Path to the CSV file.
         
     Returns:
-        return: pandas DataFrame containing the data.
+        data: pandas DataFrame containing the data.
     """
     
     try:
