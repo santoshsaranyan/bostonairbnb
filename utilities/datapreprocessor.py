@@ -21,13 +21,13 @@ def main():
     
     logging.info("Data processing completed. Saving cleaned data to CSV files...")
     
-    save_data(listingsDF, '../data/cleaned_listings.csv')
-    save_data(hostsDF, '../data/cleaned_hosts.csv')
-    save_data(locationsDF, '../data/cleaned_locations.csv')
-    save_data(amenityDF, '../data/cleaned_amenities.csv')
-    save_data(listingAmenitiesDF, '../data/cleaned_listing_amenities.csv')
-    save_data(reviewsDF, '../data/cleaned_reviews.csv')
-    save_data(calendar_df, '../data/cleaned_availability.csv')
+    save_data(listingsDF, 'data/cleaned_listings.csv')
+    save_data(hostsDF, 'data/cleaned_hosts.csv')
+    save_data(locationsDF, 'data/cleaned_locations.csv')
+    save_data(amenityDF, 'data/cleaned_amenities.csv')
+    save_data(listingAmenitiesDF, 'data/cleaned_listing_amenities.csv')
+    save_data(reviewsDF, 'data/cleaned_reviews.csv')
+    save_data(calendar_df, 'data/cleaned_availability.csv')
     
     logging.info("Cleaned data saved.")
     
@@ -152,11 +152,11 @@ def preprocess_listings_data():
     
     logging.info("Processing listings data...")
     
-    listingsData = read_data('../data/listings.csv.gz')
+    listingsData = read_data('data/listings.csv.gz')
     
     # Selecting and renaming columns
     logging.info("Selecting and renaming columns...")
-    listingsColumns = [ "id", "name", "description", "host_id", "listing_url", "neighbourhood_cleansed","neighborhood_overview",
+    listingsColumns = ["id", "name", "description", "host_id", "listing_url", "neighbourhood_cleansed","neighborhood_overview",
         "picture_url", "latitude", "longitude", "property_type", "room_type", "accommodates",
         "bathrooms","bathrooms_text", "bedrooms", "beds", "amenities", "license", 'review_scores_rating', 'review_scores_accuracy',
         'review_scores_cleanliness', 'review_scores_checkin',
@@ -262,9 +262,6 @@ def preprocess_listings_data():
 
     listingAmenitiesDF = pd.DataFrame(listingAmenities, columns=['listing_id', 'amenity_id'])
 
-    listingAmenitiesDF.to_csv('../data/cleaned_listing_amenities.csv', index=False)
-    
-    logging.info("Listing amenities data saved to cleaned_listing_amenities.csv")
 
     logging.info("Processing hosts and locations data from listings data...")
     hostsColumns = ['host_id', 'host_name', 'host_url','host_since', 'host_location','host_about', 'host_response_time',
@@ -348,7 +345,7 @@ def preprocess_reviews_data():
     """
 
     logging.info("Processing reviews data...")
-    reviewsData = read_data('../data/reviews.csv.gz')
+    reviewsData = read_data('data/reviews.csv.gz')
 
     reviewsData.rename(columns={'id':'review_id'}, inplace=True)
 
@@ -374,14 +371,14 @@ def preprocess_calendar_data():
         calendarData: DataFrame containing cleaned calendar (availability) data.
     """
     logging.info("Processing calendar data...")
-    calendarData = pd.read_csv('../data/calendar.csv.gz', compression='gzip')
+    calendarData = read_data('data/calendar.csv.gz')
 
     calendarData.drop(columns=['adjusted_price'], inplace=True)
     calendarData['available'] = calendarData['available'].apply(lambda x: True if x == 't' else False)
 
     calendarData['price'] = calendarData['price'].replace('[\$,]', '', regex=True).astype(float) # Remove dollar sign
 
-    calendarData.to_csv('../data/cleaned_availability.csv', index=False)
+    calendarData.to_csv('data/cleaned_availability.csv', index=False)
     
     logging.info("Calendar data saved to cleaned_availability.csv")
     
