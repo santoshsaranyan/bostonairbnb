@@ -71,7 +71,7 @@ def save_data(data: pd.DataFrame, filePath: str):
     """
     
     try:
-        data.to_csv(filePath, index=False, compression='gzip')
+        data.to_csv(filePath, index=False)
         logging.info(f"Data saved to {filePath}")
         
     except Exception as e:
@@ -325,6 +325,8 @@ def preprocess_listings_data():
         'overall_rating', 'accuracy_rating', 'cleanliness_rating',
         'checkin_rating', 'communication_rating', 'location_rating',
         'value_rating', 'number_of_reviews']]
+    
+    locationsDF.rename(columns={'neighbourhood': 'neighborhood'}, inplace=True)
 
     
     return listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF

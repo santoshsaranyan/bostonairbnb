@@ -9,3 +9,6 @@ six==1.17.0
 SQLAlchemy==2.0.41
 typing_extensions==4.14.0
 tzdata==2025.2
+pymysql==1.1.1
+scikit-learn==1.5.2
+cryptography==45.0.5

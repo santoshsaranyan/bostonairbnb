@@ -1,13 +1,16 @@
 import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine, inspect, text
 import logging
 from dotenv import load_dotenv
 import os
 import time
+import textwrap
 
 # Set the path to the .env file
-env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+
+print(env_path)
 
 # Load the environment variables from the .env file
 load_dotenv(dotenv_path=env_path)
@@ -35,10 +38,12 @@ def main() -> None:
     start = time.time()
     
     # Creates a connection to a MySQL database.
-    mySQLEngine = create_engine(f'mysql+pymysql://{user}:{password}@localhost/{db_name}', echo=True)
+    connectionStr = f'mysql+pymysql://{user}:{password}@127.0.0.1:3306/{db_name}'
+    print(connectionStr)
+    mySQLEngine = create_engine(connectionStr, echo=True)
     
-    # Create the database tables.
-    create_all_tables(mySQLEngine)
+    # # Create the database tables.
+    # create_all_tables(mySQLEngine)
     
     # Read data from CSV files and insert it into the database.
     insert_data_to_table(mySQLEngine)
@@ -91,43 +96,43 @@ def create_listings_table(engine) -> None:
     else:
         logging.info(f"Table '{tableName}' does not exist.")
     
-        listingsSchemaQuery = f"""
+        listingsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-            listing_id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL,
-            description TEXT,
-            host_id INTEGER NOT NULL,
-            listing_url TEXT NOT NULL,
-            location_id INTEGER NOT NULL,
-            neighborhood_overview TEXT,
-            picture_url TEXT,
-            latitude FLOAT,
-            longitude FLOAT,
-            property_type TEXT,
-            room_type TEXT,
-            accommodates INTEGER,
-            bathrooms FLOAT,
-            bathroom_type TEXT,
-            bedrooms INTEGER,
-            beds INTEGER,
-            amenities TEXT,
-            amenity_categories TEXT,
-            license TEXT,
-            overall_rating FLOAT CHECK(overall_rating >= 0 AND overall_rating <= 5),
-            accuracy_rating FLOAT CHECK(accuracy_rating >= 0 AND accuracy_rating <= 5),
-            cleanliness_rating FLOAT CHECK(cleanliness_rating >= 0 AND cleanliness_rating <= 5),
-            checkin_rating FLOAT CHECK(checkin_rating >= 0 AND checkin_rating <= 5),
-            communication_rating FLOAT CHECK(communication_rating >= 0 AND communication_rating <= 5),
-            location_rating FLOAT CHECK(location_rating >= 0 AND location_rating <= 5),
-            value_rating FLOAT CHECK(value_rating >= 0 AND value_rating <= 5),
-            number_of_reviews INTEGER DEFAULT 0,
-            FOREIGN KEY (host_id) REFERENCES hosts(host_id),
-            FOREIGN KEY (location_id) REFERENCES locations(location_id)
+        listing_id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        host_id INTEGER NOT NULL,
+        listing_url TEXT NOT NULL,
+        location_id INTEGER NOT NULL,
+        neighborhood_overview TEXT,
+        picture_url TEXT,
+        latitude FLOAT,
+        longitude FLOAT,
+        property_type TEXT,
+        room_type TEXT,
+        accommodates INTEGER,
+        bathrooms FLOAT,
+        bathroom_type TEXT,
+        bedrooms INTEGER,
+        beds INTEGER,
+        amenities TEXT,
+        amenity_categories TEXT,
+        license TEXT,
+        overall_rating FLOAT CHECK(overall_rating >= 0 AND overall_rating <= 5),
+        accuracy_rating FLOAT CHECK(accuracy_rating >= 0 AND accuracy_rating <= 5),
+        cleanliness_rating FLOAT CHECK(cleanliness_rating >= 0 AND cleanliness_rating <= 5),
+        checkin_rating FLOAT CHECK(checkin_rating >= 0 AND checkin_rating <= 5),
+        communication_rating FLOAT CHECK(communication_rating >= 0 AND communication_rating <= 5),
+        location_rating FLOAT CHECK(location_rating >= 0 AND location_rating <= 5),
+        value_rating FLOAT CHECK(value_rating >= 0 AND value_rating <= 5),
+        number_of_reviews INTEGER DEFAULT 0,
+        FOREIGN KEY (host_id) REFERENCES hosts(host_id),
+        FOREIGN KEY (location_id) REFERENCES locations(location_id)
         );
-        """
+        """)
         
         with engine.connect() as connection:
-            connection.execute(listingsSchemaQuery)
+            connection.execute(text(listingsSchemaQuery))
             logging.info("Listings table created successfully.")
 
     
@@ -154,20 +159,20 @@ def create_reviews_table(engine) -> None:
     else:
         logging.info(f"Table '{tableName}' does not exist.")
     
-        reviewsSchemaQuery = f"""
+        reviewsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-            review_id INTEGER PRIMARY KEY,
-            listing_id INTEGER NOT NULL,
-            date DATE NOT NULL,
-            reviewer_id TEXT NOT NULL,
-            reviewer_name TEXT NOT NULL,
-            comments TEXT,
-            FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
+        review_id INTEGER PRIMARY KEY,
+        listing_id INTEGER NOT NULL,
+        date DATE NOT NULL,
+        reviewer_id TEXT NOT NULL,
+        reviewer_name TEXT NOT NULL,
+        comments TEXT,
+        FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
         );
-        """
+        """)
         
         with engine.connect() as connection:
-            connection.execute(reviewsSchemaQuery)
+            connection.execute(text(reviewsSchemaQuery))
             logging.info("Reviews table created successfully.")
             
 
@@ -193,15 +198,15 @@ def create_amenities_table(engine) -> None:
     else:
         logging.info(f"Table '{tableName}' does not exist.")
     
-        reviewsSchemaQuery = f"""
+        reviewsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-            amenities_id INTEGER PRIMARY KEY,
-            amenity TEXT NOT NULL
+        amenities_id INTEGER PRIMARY KEY,
+        amenity TEXT NOT NULL
         );
-        """
+        """)
         
         with engine.connect() as connection:
-            connection.execute(reviewsSchemaQuery)
+            connection.execute(text(reviewsSchemaQuery))
             logging.info(f"{tableName} table created successfully.")
             
 
@@ -227,18 +232,18 @@ def create_listing_amenities_table(engine) -> None:
     else:
         logging.info(f"Table '{tableName}' does not exist.")
     
-        reviewsSchemaQuery = f"""
+        reviewsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-            listing_id INTEGER NOT NULL,
-            amenities_id INTEGER NOT NULL,
-            PRIMARY KEY (listing_id, amenities_id),
-            FOREIGN KEY (listing_id) REFERENCES listings(listing_id),
-            FOREIGN KEY (amenities_id) REFERENCES amenities(amenities_id)
+        listing_id INTEGER NOT NULL,
+        amenities_id INTEGER NOT NULL,
+        PRIMARY KEY (listing_id, amenities_id),
+        FOREIGN KEY (listing_id) REFERENCES listings(listing_id),
+        FOREIGN KEY (amenities_id) REFERENCES amenities(amenities_id)
         );
-        """
+        """)
         
         with engine.connect() as connection:
-            connection.execute(reviewsSchemaQuery)
+            connection.execute(text(reviewsSchemaQuery))
             logging.info(f"{tableName} table created successfully.")
     
 
@@ -266,30 +271,30 @@ def create_hosts_table(engine) -> None:
     else:
         logging.info(f"Table '{tableName}' does not exist.")
         
-        hostsSchemaQuery = f"""
+        hostsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-            host_id INTEGER PRIMARY KEY,
-            host_name TEXT NOT NULL,
-            host_url TEXT NOT NULL,
-            host_since TEXT,
-            location_id TEXT,
-            host_about TEXT,
-            host_response_time TEXT,
-            host_response_rate FLOAT CHECK(host_response_rate >= 0 AND host_response_rate <= 100),
-            host_acceptance_rate FLOAT CHECK(host_acceptance_rate >= 0 AND host_acceptance_rate <= 100),
-            host_is_superhost BOOLEAN,
-            host_thumbnail_url TEXT,
-            host_picture_url TEXT,
-            host_total_listings_count INTEGER DEFAULT 0,
-            host_verifications TEXT,
-            host_has_profile_pic BOOLEAN,
-            host_identity_verified BOOLEAN,
-            FOREIGN KEY (location_id) REFERENCES locations(location_id)
+        host_id INTEGER PRIMARY KEY,
+        host_name TEXT NOT NULL,
+        host_url TEXT NOT NULL,
+        host_since TEXT,
+        location_id INTEGER NOT NULL,
+        host_about TEXT,
+        host_response_time TEXT,
+        host_response_rate FLOAT CHECK(host_response_rate >= 0 AND host_response_rate <= 100),
+        host_acceptance_rate FLOAT CHECK(host_acceptance_rate >= 0 AND host_acceptance_rate <= 100),
+        host_is_superhost BOOLEAN,
+        host_thumbnail_url TEXT,
+        host_picture_url TEXT,
+        host_total_listings_count INTEGER DEFAULT 0,
+        host_verifications TEXT,
+        host_has_profile_pic BOOLEAN,
+        host_identity_verified BOOLEAN,
+        FOREIGN KEY (location_id) REFERENCES locations(location_id)
         );
-        """
+        """)
         
         with engine.connect() as connection:
-            connection.execute(hostsSchemaQuery)
+            connection.execute(text(hostsSchemaQuery))
             logging.info("Hosts table created successfully.")
         
     
@@ -315,16 +320,16 @@ def create_locations_table(engine) -> None:
         
     else:
         logging.info(f"Table '{tableName}' does not exist.")
-        locationsSchemaQuery = f"""
+        locationsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-            location_id INTEGER PRIMARY KEY,
-            location TEXT NOT NULL,
-            neighborhood TEXT
+        location_id INTEGER PRIMARY KEY,
+        location TEXT NOT NULL,
+        neighborhood TEXT
         );
-        """
+        """)
         
         with engine.connect() as connection:
-            connection.execute(locationsSchemaQuery)
+            connection.execute(text(locationsSchemaQuery))
             logging.info("Locations table created successfully.")
     
     
@@ -351,21 +356,21 @@ def create_availability_table(engine) -> None:
     else:
         logging.info(f"Table '{tableName}' does not exist.")
     
-        availabilitySchemaQuery = f"""
+        availabilitySchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-            listing_id INTEGER NOT NULL,
-            date DATE NOT NULL,
-            available BOOLEAN NOT NULL,
-            minimum_nights INTEGER DEFAULT 1,
-            maximum_nights INTEGER DEFAULT 365,
-            price FLOAT CHECK(price >= 0),
-            PRIMARY KEY (listing_id, date),
-            FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
+        listing_id INTEGER NOT NULL,
+        date DATE NOT NULL,
+        available BOOLEAN NOT NULL,
+        minimum_nights INTEGER DEFAULT 1,
+        maximum_nights INTEGER DEFAULT 365,
+        price FLOAT CHECK(price >= 0),
+        PRIMARY KEY (listing_id, date),
+        FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
         );
-        """
+        """)
         
         with engine.connect() as connection:
-            connection.execute(availabilitySchemaQuery)
+            connection.execute(text(availabilitySchemaQuery))
             logging.info("Availability table created successfully.")
         
         
@@ -409,18 +414,27 @@ def insert_data_to_table(engine) -> None:
     
     # Read data from CSV files
     logging.info("Reading data from CSV files...")
-    listingsData = read_data('cleaned_listings.csv')
-    reviewsData = read_data('cleaned_reviews.csv')
-    hostsData = read_data('cleaned_hosts.csv')
-    locationsData = read_data('cleaned_locations.csv')
-    availabilityData = read_data('cleaned_availability.csv')
-    amenitiesData = read_data('cleaned_amenities.csv')
-    listingAmenitiesData = read_data('cleaned_listing_amenities.csv')
+    listingsData = read_data('data/cleaned_listings.csv')
+    reviewsData = read_data('data/cleaned_reviews.csv')
+    hostsData = read_data('data/cleaned_hosts.csv')
+    locationsData = read_data('data/cleaned_locations.csv')
+    availabilityData = read_data('data/cleaned_availability.csv')
+    amenitiesData = read_data('data/cleaned_amenities.csv')
+    listingAmenitiesData = read_data('data/cleaned_listing_amenities.csv')
     logging.info("Data read successfully.")
     
     
     # Insert data into the database tables
     logging.info("Inserting data into the database...")
+    if not locationsData.empty:
+        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
+        logging.info("Locations data inserted successfully.")
+        
+    if not hostsData.empty:
+        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
+        logging.info("Hosts data inserted successfully.")
+        
+        
     if not listingsData.empty:
         listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
         logging.info("Listings data inserted successfully.")
@@ -429,21 +443,14 @@ def insert_data_to_table(engine) -> None:
         reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
         logging.info("Reviews data inserted successfully.")
         
-    if not hostsData.empty:
-        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
-        logging.info("Hosts data inserted successfully.")
+    if not amenitiesData.empty:
+        amenitiesData.to_sql('amenities', con=engine, if_exists='append', index=False)
+        logging.info("Amenities data inserted successfully.")
         
-    if not locationsData.empty:
-        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
-        logging.info("Locations data inserted successfully.")
         
     if not availabilityData.empty:
         availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
         logging.info("Availability data inserted successfully.")
-
-    if not amenitiesData.empty:
-        amenitiesData.to_sql('amenities', con=engine, if_exists='append', index=False)
-        logging.info("Amenities data inserted successfully.")
     
     if not listingAmenitiesData.empty:
         listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)
