@@ -243,7 +243,7 @@ def preprocess_listings_data():
 
 
     logging.info("Matching amenities to categories...")
-    listingsDF['amenity_categories'] = listingsDF['amenities'].apply( lambda amenities: list(set(cat for amenity in amenities for cat in match_amenity_to_category_tfidf(amenityToVector, amenity, categoryVectors, categoryLabels))))
+    listingsDF['amenity_categories'] = listingsDF['amenities'].apply(lambda amenities: list(set(cat for amenity in amenities for cat in match_amenity_to_category_tfidf(amenityToVector, amenity, categoryVectors, categoryLabels))))
 
 
     uniqueAmenityCategories = list(amenityCategoryMap.keys())
@@ -310,6 +310,10 @@ def preprocess_listings_data():
     hostsDF['host_is_superhost'] = hostsDF['host_is_superhost'].apply(lambda x: True if x == 't' else False)
     hostsDF['host_has_profile_pic'] = hostsDF['host_has_profile_pic'].apply(lambda x: True if x == 't' else False)
     hostsDF['host_identity_verified'] = hostsDF['host_identity_verified'].apply(lambda x: True if x == 't' else False)
+    hostsDF['host_response_rate'] = hostsDF['host_response_rate'].str.replace('%', '').astype(float)
+    hostsDF['host_acceptance_rate'] = hostsDF['host_acceptance_rate'].str.replace('%', '').astype(float)
+    hostsDF = hostsDF[~hostsDF['host_id'].str.contains(r'^\d+$', na=False)]
+    hostsDF.drop_duplicates(inplace=True)
 
 
     # Mapping listings data with locations
@@ -321,10 +325,14 @@ def preprocess_listings_data():
     listingsDF = listingsDF[['listing_id', 'name', 'description', 'host_id', 'listing_url',
         'location_id', 'neighborhood_overview', 'picture_url',
         'latitude', 'longitude', 'property_type', 'room_type', 'accommodates',
-        'bathrooms', 'bedrooms', 'bathroom_type', 'beds', 'amenities', 'amenity_categories', 'license',
+        'bathrooms', 'bedrooms', 'bathroom_type', 'beds', 'amenities', 'license',
         'overall_rating', 'accuracy_rating', 'cleanliness_rating',
         'checkin_rating', 'communication_rating', 'location_rating',
         'value_rating', 'number_of_reviews']]
+    
+    listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
+    
+    listingsDF.drop_duplicates(inplace=True)
     
     locationsDF.rename(columns={'neighbourhood': 'neighborhood'}, inplace=True)
 

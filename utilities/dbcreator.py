@@ -116,7 +116,6 @@ def create_listings_table(engine) -> None:
         bedrooms INTEGER,
         beds INTEGER,
         amenities TEXT,
-        amenity_categories TEXT,
         license TEXT,
         overall_rating FLOAT CHECK(overall_rating >= 0 AND overall_rating <= 5),
         accuracy_rating FLOAT CHECK(accuracy_rating >= 0 AND accuracy_rating <= 5),
@@ -426,9 +425,9 @@ def insert_data_to_table(engine) -> None:
     
     # Insert data into the database tables
     logging.info("Inserting data into the database...")
-    if not locationsData.empty:
-        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
-        logging.info("Locations data inserted successfully.")
+    # if not locationsData.empty:
+    #     locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
+    #     logging.info("Locations data inserted successfully.")
         
     if not hostsData.empty:
         hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
