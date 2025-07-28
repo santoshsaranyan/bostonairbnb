@@ -429,14 +429,14 @@ def insert_data_to_table(engine) -> None:
     #     locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
     #     logging.info("Locations data inserted successfully.")
         
-    if not hostsData.empty:
-        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
-        logging.info("Hosts data inserted successfully.")
+    # if not hostsData.empty:
+    #     hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
+    #     logging.info("Hosts data inserted successfully.")
         
         
-    if not listingsData.empty:
-        listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
-        logging.info("Listings data inserted successfully.")
+    # if not listingsData.empty:
+    #     listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
+    #     logging.info("Listings data inserted successfully.")
         
     if not reviewsData.empty:
         reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
@@ -447,9 +447,9 @@ def insert_data_to_table(engine) -> None:
         logging.info("Amenities data inserted successfully.")
         
         
-    if not availabilityData.empty:
-        availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
-        logging.info("Availability data inserted successfully.")
+    # if not availabilityData.empty:
+    #     availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
+    #     logging.info("Availability data inserted successfully.")
     
     if not listingAmenitiesData.empty:
         listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)

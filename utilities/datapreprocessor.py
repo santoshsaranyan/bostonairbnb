@@ -154,9 +154,13 @@ def preprocess_listings_data():
     
     listingsData = read_data('data/listings.csv.gz')
     
+    listingsData = listingsData.reset_index().rename(columns={'index': 'listing_id'})
+    listingsData['listing_id'] = listingsData['listing_id'] + 1000 
+    listingsData['listing_id'] = listingsData['listing_id'].astype(int)
+    
     # Selecting and renaming columns
     logging.info("Selecting and renaming columns...")
-    listingsColumns = ["id", "name", "description", "host_id", "listing_url", "neighbourhood_cleansed","neighborhood_overview",
+    listingsColumns = ["listing_id", "name", "description", "host_id", "listing_url", "neighbourhood_cleansed","neighborhood_overview",
         "picture_url", "latitude", "longitude", "property_type", "room_type", "accommodates",
         "bathrooms","bathrooms_text", "bedrooms", "beds", "amenities", "license", 'review_scores_rating', 'review_scores_accuracy',
         'review_scores_cleanliness', 'review_scores_checkin',
@@ -165,7 +169,7 @@ def preprocess_listings_data():
 
 
     listingsDF = listingsData[listingsColumns].copy()
-    listingsDF.rename(columns={'id': 'listing_id', 'review_scores_rating': 'overall_rating','review_scores_accuracy': 'accuracy_rating',
+    listingsDF.rename(columns={'review_scores_rating': 'overall_rating','review_scores_accuracy': 'accuracy_rating',
         'review_scores_cleanliness': 'cleanliness_rating', 'review_scores_checkin': 'checkin_rating',
         'review_scores_communication': 'communication_rating', 'review_scores_location': 'location_rating',
         'review_scores_value': 'value_rating'}, inplace=True)
@@ -312,9 +316,12 @@ def preprocess_listings_data():
     hostsDF['host_identity_verified'] = hostsDF['host_identity_verified'].apply(lambda x: True if x == 't' else False)
     hostsDF['host_response_rate'] = hostsDF['host_response_rate'].str.replace('%', '').astype(float)
     hostsDF['host_acceptance_rate'] = hostsDF['host_acceptance_rate'].str.replace('%', '').astype(float)
-    hostsDF = hostsDF[~hostsDF['host_id'].str.contains(r'^\d+$', na=False)]
     hostsDF.drop_duplicates(inplace=True)
-
+    
+    hostsDF['host_id'] = pd.to_numeric(hostsDF['host_id'], errors='coerce')
+    hostsDF.dropna(subset=['host_id'], inplace=True)
+    hostsDF['host_id'] = hostsDF['host_id'].astype(int)
+    
 
     # Mapping listings data with locations
     logging.info("Mapping listings data with locations...")
@@ -332,7 +339,16 @@ def preprocess_listings_data():
     
     listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
     
+    listingsDF['host_id'] = pd.to_numeric(listingsDF['host_id'], errors='coerce')
+    listingsDF.dropna(subset=['host_id'], inplace=True)
+    listingsDF['host_id'] = listingsDF['host_id'].astype(int)
+    
+    listingsDF['listing_id'] = pd.to_numeric(listingsDF['listing_id'], errors='coerce')
+    listingsDF.dropna(subset=['listing_id'], inplace=True)
+    listingsDF['listing_id'] = listingsDF['listing_id'].astype(int)
+    
     listingsDF.drop_duplicates(inplace=True)
+    listingsDF = listingsDF.drop_duplicates(subset=['listing_id'], keep='first')
     
     locationsDF.rename(columns={'neighbourhood': 'neighborhood'}, inplace=True)
 
