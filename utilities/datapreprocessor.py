@@ -5,6 +5,7 @@ import time
 import logging
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import csv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -15,9 +16,9 @@ def main():
     start = time.time()
     
     logging.info("Starting data preprocessing...")
-    listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF = preprocess_listings_data()
-    reviewsDF = preprocess_reviews_data()
-    calendar_df = preprocess_calendar_data()
+    listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF, listingsCIDMap = preprocess_listings_data()
+    reviewsDF = preprocess_reviews_data(listingsCIDMap)
+    calendar_df = preprocess_calendar_data(listingsCIDMap)
     
     logging.info("Data processing completed. Saving cleaned data to CSV files...")
     
@@ -157,10 +158,11 @@ def preprocess_listings_data():
     listingsData = listingsData.reset_index().rename(columns={'index': 'listing_id'})
     listingsData['listing_id'] = listingsData['listing_id'] + 1000 
     listingsData['listing_id'] = listingsData['listing_id'].astype(int)
+    listingsData['id'] = listingsData['id'].astype(str)
     
     # Selecting and renaming columns
     logging.info("Selecting and renaming columns...")
-    listingsColumns = ["listing_id", "name", "description", "host_id", "listing_url", "neighbourhood_cleansed","neighborhood_overview",
+    listingsColumns = ["listing_id", "id","name", "description", "host_id", "listing_url", "neighbourhood_cleansed","neighborhood_overview",
         "picture_url", "latitude", "longitude", "property_type", "room_type", "accommodates",
         "bathrooms","bathrooms_text", "bedrooms", "beds", "amenities", "license", 'review_scores_rating', 'review_scores_accuracy',
         'review_scores_cleanliness', 'review_scores_checkin',
@@ -169,7 +171,7 @@ def preprocess_listings_data():
 
 
     listingsDF = listingsData[listingsColumns].copy()
-    listingsDF.rename(columns={'review_scores_rating': 'overall_rating','review_scores_accuracy': 'accuracy_rating',
+    listingsDF.rename(columns={'id':'listing_cid','review_scores_rating': 'overall_rating','review_scores_accuracy': 'accuracy_rating',
         'review_scores_cleanliness': 'cleanliness_rating', 'review_scores_checkin': 'checkin_rating',
         'review_scores_communication': 'communication_rating', 'review_scores_location': 'location_rating',
         'review_scores_value': 'value_rating'}, inplace=True)
@@ -303,11 +305,13 @@ def preprocess_listings_data():
 
     hostsDF.drop(columns=['host_neighbourhood', 'host_location'], inplace=True)
     
-    hostsDF = hostsDF[['host_id', 'host_name', 'host_url', 'host_since', 'location_id', 'host_about',
-        'host_response_time', 'host_response_rate', 'host_acceptance_rate',
-        'host_is_superhost', 'host_thumbnail_url', 'host_picture_url',
-        'host_total_listings_count', 'host_verifications', 'host_has_profile_pic',
-        'host_identity_verified']]
+    hostsDF['host_about'] = hostsDF['host_about'].astype(str)
+    
+    hostsDF['host_about'] = hostsDF['host_about'].replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True)
+    
+    hostsDF['host_about'] = hostsDF['host_about'].str.strip()
+    
+    hostsDF['host_about'] = hostsDF['host_about'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
 
     hostsDF['host_name'] = hostsDF['host_name'].fillna('Unknown Host')
 
@@ -316,11 +320,25 @@ def preprocess_listings_data():
     hostsDF['host_identity_verified'] = hostsDF['host_identity_verified'].apply(lambda x: True if x == 't' else False)
     hostsDF['host_response_rate'] = hostsDF['host_response_rate'].str.replace('%', '').astype(float)
     hostsDF['host_acceptance_rate'] = hostsDF['host_acceptance_rate'].str.replace('%', '').astype(float)
-    hostsDF.drop_duplicates(inplace=True)
     
     hostsDF['host_id'] = pd.to_numeric(hostsDF['host_id'], errors='coerce')
     hostsDF.dropna(subset=['host_id'], inplace=True)
     hostsDF['host_id'] = hostsDF['host_id'].astype(int)
+    hostsDF['host_cid'] = hostsDF['host_id'].astype(str)
+    hostsDF.drop(columns=['host_id'], inplace=True)
+    
+    hostsDF.drop_duplicates(inplace=True)
+    hostsDF = hostsDF.reset_index(drop=True).reset_index().rename(columns={'index': 'host_id'})
+    hostsDF['host_id'] = hostsDF['host_id'] + 1000
+    hostsDF['host_id'] = hostsDF['host_id'].astype(int)
+    
+    hostsDF = hostsDF[['host_id', 'host_cid', 'host_name', 'host_url', 'host_since', 'location_id', 'host_about',
+        'host_response_time', 'host_response_rate', 'host_acceptance_rate',
+        'host_is_superhost', 'host_thumbnail_url', 'host_picture_url',
+        'host_total_listings_count', 'host_verifications', 'host_has_profile_pic',
+        'host_identity_verified']]
+    
+    hostsDF.drop_duplicates(inplace=True)
     
 
     # Mapping listings data with locations
@@ -328,8 +346,15 @@ def preprocess_listings_data():
     listingsDF['location_id'] = listingsDF.apply(lambda row: locationsNeighborhoodMap[row['neighbourhood_cleansed'] + ', ' + row['location']], axis=1)
 
     listingsDF.drop(columns=['neighbourhood_cleansed', 'location'], inplace=True)
+    
+    listingsDF['host_cid'] = listingsDF['host_id']
+    
+    hostcidMap = dict(zip(hostsDF['host_cid'], hostsDF['host_id']))
+    listingsDF['host_cid'] = listingsDF['host_cid'].astype(str)
+    listingsDF['host_id'] = listingsDF['host_cid'].map(hostcidMap)
+    listingsDF['host_id'] = listingsDF['host_id'].astype(int)
 
-    listingsDF = listingsDF[['listing_id', 'name', 'description', 'host_id', 'listing_url',
+    listingsDF = listingsDF[['listing_id', 'listing_cid', 'name', 'description', 'host_id', 'listing_url',
         'location_id', 'neighborhood_overview', 'picture_url',
         'latitude', 'longitude', 'property_type', 'room_type', 'accommodates',
         'bathrooms', 'bedrooms', 'bathroom_type', 'beds', 'amenities', 'license',
@@ -337,11 +362,15 @@ def preprocess_listings_data():
         'checkin_rating', 'communication_rating', 'location_rating',
         'value_rating', 'number_of_reviews']]
     
-    listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
+    listingsDF['description'] = listingsDF['description'].astype(str)
     
-    listingsDF['host_id'] = pd.to_numeric(listingsDF['host_id'], errors='coerce')
-    listingsDF.dropna(subset=['host_id'], inplace=True)
-    listingsDF['host_id'] = listingsDF['host_id'].astype(int)
+    listingsDF['description'] = listingsDF['description'].replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True)
+    
+    listingsDF['description'] = listingsDF['description'].str.strip()
+    
+    listingsDF['description'] = listingsDF['description'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
+    
+    listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
     
     listingsDF['listing_id'] = pd.to_numeric(listingsDF['listing_id'], errors='coerce')
     listingsDF.dropna(subset=['listing_id'], inplace=True)
@@ -351,14 +380,16 @@ def preprocess_listings_data():
     listingsDF = listingsDF.drop_duplicates(subset=['listing_id'], keep='first')
     
     locationsDF.rename(columns={'neighbourhood': 'neighborhood'}, inplace=True)
+    
+    listingsCIDMap = dict(zip(listingsDF['listing_cid'], listingsDF['listing_id']))
 
     
-    return listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF
+    return listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF, listingsCIDMap
 
 
 
 
-def preprocess_reviews_data():
+def preprocess_reviews_data(listingsCIDMap):
     """
     Reads the reviews data from a compressed CSV file, processes it to clean and transform the data into a suitable format to insert into the database's reviews table.
     The dataframe is saved as a CSV file.
@@ -373,19 +404,51 @@ def preprocess_reviews_data():
     logging.info("Processing reviews data...")
     reviewsData = read_data('data/reviews.csv.gz')
 
-    reviewsData.rename(columns={'id':'review_id'}, inplace=True)
+    reviewsData.rename(columns={'id':'review_cid', 'listing_id':'listing_cid'}, inplace=True)
+    
+    reviewsData['listing_cid'] = reviewsData['listing_cid'].astype(str)
+    
+    reviewsData['listing_cid'] = reviewsData['listing_cid'].replace('.0', '')
+    
+    reviewsData['review_cid'] = reviewsData['review_cid'].astype(str)
+    
+    reviewsData['reviewer_id'] = reviewsData['reviewer_id'].astype(str)
 
     reviewsData['reviewer_name'] = reviewsData['reviewer_name'].fillna('Unknown Reviewer')
+    
+    reviewsData['listing_id'] = reviewsData['listing_cid'].map(listingsCIDMap)
+    
+    reviewsData['comments'] = reviewsData['comments'].fillna('No comments provided')
+    
+    reviewsData['comments'] = reviewsData['comments'].astype(str)
+    
+    reviewsData['comments'] = reviewsData['comments'].replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True)
+    
+    reviewsData['comments'] = reviewsData['comments'].str.strip()
+    
+    reviewsData['comments'] = reviewsData['comments'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
+    
 
-    reviewsDF = reviewsData[['review_id', 'listing_id', 'date', 'reviewer_id', 'reviewer_name', 'comments']]
+    reviewsDF = reviewsData[['review_cid', 'listing_id', 'date', 'reviewer_id', 'reviewer_name', 'comments']]
+    
+    reviewsDF =reviewsDF.dropna(subset=['listing_id'])
+    
+    reviewsDF = reviewsDF.drop_duplicates()
+    
+    reviewsDF = reviewsDF.reset_index(drop=True).reset_index().rename(columns={'index': 'review_id'})
+    
+    reviewsDF['review_id'] = reviewsDF['review_id'] + 1000
+    
+    reviewsDF['review_id'] = reviewsDF['review_id'].astype(int)
+    
+    reviewsDF['listing_id'] = reviewsDF['listing_id'].astype(int)
 
-    reviewsDF['comments'] = reviewsDF['comments'].fillna('No comments provided')
 
     return reviewsDF
     
     
     
-def preprocess_calendar_data():
+def preprocess_calendar_data(listingsCIDMap):
     """
     Reads the calendar data from a compressed CSV file, processes it to clean and transform the data into a suitable format to insert into the database's availability table.
     The dataframe is saved as a CSV file.
@@ -398,15 +461,24 @@ def preprocess_calendar_data():
     """
     logging.info("Processing calendar data...")
     calendarData = read_data('data/calendar.csv.gz')
+    
+    calendarData.rename(columns={'listing_id':'listing_cid'}, inplace=True)
+    
+    calendarData['listing_cid'] = calendarData['listing_cid'].astype(str)
+    
+    calendarData['listing_id'] = calendarData['listing_cid'].map(listingsCIDMap)
+    
+    calendarData['listing_id'] = calendarData['listing_id'].astype(int)
+    
+    calendarData.dropna(subset=['listing_id'], inplace=True)
 
-    calendarData.drop(columns=['adjusted_price'], inplace=True)
+    calendarData.drop(columns=['adjusted_price','listing_cid'], inplace=True)
+    
     calendarData['available'] = calendarData['available'].apply(lambda x: True if x == 't' else False)
 
-    calendarData['price'] = calendarData['price'].replace('[\$,]', '', regex=True).astype(float) # Remove dollar sign
-
-    calendarData.to_csv('data/cleaned_availability.csv', index=False)
+    calendarData['price'] = calendarData['price'].replace('[\$,]', '', regex=True).astype(float) # Removes dollar sign
     
-    logging.info("Calendar data saved to cleaned_availability.csv")
+    calendarData.dropna(subset=['date', 'listing_id'], inplace=True)
     
     return calendarData
 

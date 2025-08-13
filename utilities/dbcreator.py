@@ -43,7 +43,7 @@ def main() -> None:
     mySQLEngine = create_engine(connectionStr, echo=True)
     
     # # Create the database tables.
-    # create_all_tables(mySQLEngine)
+    create_all_tables(mySQLEngine)
     
     # Read data from CSV files and insert it into the database.
     insert_data_to_table(mySQLEngine)
@@ -99,6 +99,7 @@ def create_listings_table(engine) -> None:
         listingsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
         listing_id INTEGER PRIMARY KEY,
+        listing_cid TEXT NOT NULL,
         name TEXT NOT NULL,
         description TEXT,
         host_id INTEGER NOT NULL,
@@ -125,6 +126,8 @@ def create_listings_table(engine) -> None:
         location_rating FLOAT CHECK(location_rating >= 0 AND location_rating <= 5),
         value_rating FLOAT CHECK(value_rating >= 0 AND value_rating <= 5),
         number_of_reviews INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (host_id) REFERENCES hosts(host_id),
         FOREIGN KEY (location_id) REFERENCES locations(location_id)
         );
@@ -161,11 +164,14 @@ def create_reviews_table(engine) -> None:
         reviewsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
         review_id INTEGER PRIMARY KEY,
+        review_cid TEXT NOT NULL,
         listing_id INTEGER NOT NULL,
         date DATE NOT NULL,
         reviewer_id TEXT NOT NULL,
         reviewer_name TEXT NOT NULL,
         comments TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
         );
         """)
@@ -199,8 +205,10 @@ def create_amenities_table(engine) -> None:
     
         reviewsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
-        amenities_id INTEGER PRIMARY KEY,
-        amenity TEXT NOT NULL
+        amenity_id INTEGER PRIMARY KEY,
+        amenity_name TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         );
         """)
         
@@ -234,10 +242,12 @@ def create_listing_amenities_table(engine) -> None:
         reviewsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
         listing_id INTEGER NOT NULL,
-        amenities_id INTEGER NOT NULL,
-        PRIMARY KEY (listing_id, amenities_id),
+        amenity_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (listing_id, amenity_id),
         FOREIGN KEY (listing_id) REFERENCES listings(listing_id),
-        FOREIGN KEY (amenities_id) REFERENCES amenities(amenities_id)
+        FOREIGN KEY (amenity_id) REFERENCES amenities(amenity_id)
         );
         """)
         
@@ -273,6 +283,7 @@ def create_hosts_table(engine) -> None:
         hostsSchemaQuery = textwrap.dedent(f"""
         CREATE TABLE IF NOT EXISTS {tableName} (
         host_id INTEGER PRIMARY KEY,
+        host_cid TEXT NOT NULL,
         host_name TEXT NOT NULL,
         host_url TEXT NOT NULL,
         host_since TEXT,
@@ -288,6 +299,8 @@ def create_hosts_table(engine) -> None:
         host_verifications TEXT,
         host_has_profile_pic BOOLEAN,
         host_identity_verified BOOLEAN,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (location_id) REFERENCES locations(location_id)
         );
         """)
@@ -323,7 +336,9 @@ def create_locations_table(engine) -> None:
         CREATE TABLE IF NOT EXISTS {tableName} (
         location_id INTEGER PRIMARY KEY,
         location TEXT NOT NULL,
-        neighborhood TEXT
+        neighborhood TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         );
         """)
         
@@ -363,6 +378,8 @@ def create_availability_table(engine) -> None:
         minimum_nights INTEGER DEFAULT 1,
         maximum_nights INTEGER DEFAULT 365,
         price FLOAT CHECK(price >= 0),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (listing_id, date),
         FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
         );
@@ -425,18 +442,18 @@ def insert_data_to_table(engine) -> None:
     
     # Insert data into the database tables
     logging.info("Inserting data into the database...")
-    # if not locationsData.empty:
-    #     locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
-    #     logging.info("Locations data inserted successfully.")
+    if not locationsData.empty:
+        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
+        logging.info("Locations data inserted successfully.")
         
-    # if not hostsData.empty:
-    #     hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
-    #     logging.info("Hosts data inserted successfully.")
+    if not hostsData.empty:
+        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
+        logging.info("Hosts data inserted successfully.")
         
         
-    # if not listingsData.empty:
-    #     listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
-    #     logging.info("Listings data inserted successfully.")
+    if not listingsData.empty:
+        listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
+        logging.info("Listings data inserted successfully.")
         
     if not reviewsData.empty:
         reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
@@ -447,9 +464,9 @@ def insert_data_to_table(engine) -> None:
         logging.info("Amenities data inserted successfully.")
         
         
-    # if not availabilityData.empty:
-    #     availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
-    #     logging.info("Availability data inserted successfully.")
+    if not availabilityData.empty:
+        availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
+        logging.info("Availability data inserted successfully.")
     
     if not listingAmenitiesData.empty:
         listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)
