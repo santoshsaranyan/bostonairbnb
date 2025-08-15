@@ -10,6 +10,10 @@ import csv
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+"""
+This script reads data from gzipped CSV files, and preprocesses them to clean and transform the data into suitable formats to insert into database tables.
+The cleaned data is then saved as CSV files.
+"""
 
 def main():
     
@@ -417,6 +421,9 @@ def preprocess_reviews_data(listingsCIDMap):
     reviewsData['reviewer_name'] = reviewsData['reviewer_name'].fillna('Unknown Reviewer')
     
     reviewsData['listing_id'] = reviewsData['listing_cid'].map(listingsCIDMap)
+    
+    
+    # Fixing the comments colummn
     
     reviewsData['comments'] = reviewsData['comments'].fillna('No comments provided')
     
