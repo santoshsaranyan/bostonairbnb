@@ -21,7 +21,7 @@ def fetch_html(url: str, max_retries: int = 3, backoff_factor: float = 1.0) -> N
     """
     Fetches the HTML content of a given URL.
     
-    Args:
+    Parameters:
         url (str): The URL to fetch.
         
     Returns:
@@ -74,8 +74,11 @@ def download_file(link: str) -> None:
     """
     Downloads a file from the given URL.
     
-    Args:
+    Parameters:
         link (str): The URL of the file to download.
+        
+    Returns:
+        None
     """
     
     # Create destination folder if it doesn't exist
