@@ -16,6 +16,6 @@ user = exampleairbnbuser
 password = examplepassword123
 db_name = airbnbdatabase
 ```
-- To get the files, run `datascraper.py` using the command: `python datascraper.py`
-- To preprocess the files for database loading, run `datapreprocessor.py` using the command: `python datascraper.py`
-- To load the files into the database (and create the required tables), run `dbcreator.py` using the command: `python dbcreator.py`
+- To get the files, run `datascraper.py` using the command: `python utilities/datascraper.py`
+- To preprocess the files for database loading, run `datapreprocessor.py` using the command: `python utilities/datascraper.py`
+- To load the files into the database (and create the required tables), run `dbcreator.py` using the command: `python utilities/dbcreator.py`
