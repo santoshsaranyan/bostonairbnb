@@ -11,6 +11,8 @@ __pycache__/
 *.csv.gz
 *.geojson
 *.ipynb
+*.html
+archivecode.py
 
 # Distribution / packaging
 .Python

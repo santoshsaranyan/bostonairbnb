@@ -138,11 +138,9 @@ def match_amenity_to_category_tfidf(amenityToVector, amenityStr, categoryVectors
     return matches if matches else ['Miscellaneous']
 
 
-    
 def preprocess_listings_data():
     """
-    Reads the listings data from a compressed CSV file, processes it to clean and transform the data into five different dataframes which are the listings, hosts, locations, amenities, and listing_amenities dataframes.
-    These dataframes are then saved as CSV files.
+    Reads the listings data from a compressed CSV file, processes it to clean and transform the data into a suitable format to insert into the database's listings, hosts, locations, amenities, and listing_amenities tables.
     
     Parameters:
         None
@@ -151,8 +149,36 @@ def preprocess_listings_data():
         listingsDF: DataFrame containing cleaned listings data.
         hostsDF: DataFrame containing cleaned hosts data.
         locationsDF: DataFrame containing cleaned locations data.
-        amenityDF: DataFrame containing unique amenities and their IDs.
-        listingAmenitiesDF: DataFrame containing the mapping of listings to their amenities.
+        amenityDF: DataFrame containing cleaned amenities data.
+        listingAmenitiesDF: DataFrame containing cleaned listing-amenities mapping data.
+        listingsCIDMap: Dictionary mapping listing_cid to listing_id.
+    """
+
+    # Load listings data
+    listingsData = load_listings_data("data/listings.csv.gz")
+
+    # Clean listings table
+    listingsDF = process_listings(listingsData)
+
+    # Process amenities
+    amenityDF, listingAmenitiesDF = process_amenities(listingsDF)
+
+    # Process hosts and locations
+    hostsDF, locationsDF, listingsDF, listingsCIDMap = process_hosts_and_locations(listingsData, listingsDF)
+
+    return listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF, listingsCIDMap
+
+
+
+def load_listings_data():
+    """
+    Reads the listings data from a compressed CSV file and returns it as a pandas DataFrame.
+    
+    Parameters:
+        None
+        
+    Returns:
+        listingsData: DataFrame containing the listings data.
     """
     
     logging.info("Processing listings data...")
@@ -164,6 +190,18 @@ def preprocess_listings_data():
     listingsData['listing_id'] = listingsData['listing_id'].astype(int)
     listingsData['id'] = listingsData['id'].astype(str)
     
+    return listingsData
+
+
+def process_listings(listingsData):
+    """
+    Processes the listings data to clean and transform it into a suitable format to insert into the database's listings table.
+    
+    Parameters:
+        listingsData: DataFrame containing the raw listings data.
+    Returns:
+        listingsDF: DataFrame containing cleaned listings data.
+    """
     # Selecting and renaming columns
     logging.info("Selecting and renaming columns...")
     listingsColumns = ["listing_id", "id","name", "description", "host_id", "listing_url", "neighbourhood_cleansed","neighborhood_overview",
@@ -196,8 +234,23 @@ def preprocess_listings_data():
 
     logging.info("Cleaning, splitting and categorizing amenities...")
     listingsDF['amenities'] = listingsDF['amenities'].apply(clean_and_split_amenities)
+    
+    return listingsDF
 
 
+def process_amenities(listingsDF):
+    """ 
+    Processes the amenities data from the listings DataFrame to create amenities and listing_amenities DataFrames.
+    
+    Parameters:
+        listingsDF: DataFrame containing the listings data with amenities.
+        
+    Returns:
+        amenityDF: DataFrame containing cleaned amenities data.
+        listingAmenitiesDF: DataFrame containing cleaned listing-amenities mapping data.
+    """
+    
+    logging.info("Categorizing amenities...")
     # Creating a mapping of amenities to categories using TF-IDF vectorization and cosine similarity
     amenityCategoryMap = {
         'TV': ['hdtv', 'tv', 'screen', 'television', 'smart tv', 'flat screen', 'oled', 'led'],
@@ -262,133 +315,223 @@ def preprocess_listings_data():
         'amenity_id': range(1, len(uniqueAmenityCategories) + 1),
         'amenity_name': uniqueAmenityCategories
     })
-    
 
     amenityToId = dict(zip(amenityDF['amenity_name'], amenityDF['amenity_id']))
-
 
     logging.info("Creating listing amenities mapping...")
     listingAmenities = [(listing_id, amenityToId[amenity]) for listing_id, amenities in zip(listingsDF['listing_id'], listingsDF['amenity_categories']) for amenity in amenities]
 
     listingAmenitiesDF = pd.DataFrame(listingAmenities, columns=['listing_id', 'amenity_id'])
+    
+    return amenityDF, listingAmenitiesDF
 
 
-    logging.info("Processing hosts and locations data from listings data...")
-    hostsColumns = ['host_id', 'host_name', 'host_url','host_since', 'host_location','host_about', 'host_response_time',
-                    'host_response_rate', 'host_acceptance_rate', 'host_is_superhost','host_thumbnail_url','host_picture_url',
-                    'host_neighbourhood', 'host_total_listings_count', 'host_has_profile_pic', 'host_identity_verified','host_verifications']
+def process_locations(listingsData, listingsDF):
+    """
+    Processes the locations data from the listings DataFrame to create locations DataFrame and a mapping of neighborhood-location to location_id.
+    
+    Parameters:
+        listingsData: DataFrame containing the raw listings data.
+        listingsDF: DataFrame containing the cleaned listings data.
+    
+    Returns:
+        locationsDF: DataFrame containing cleaned locations data.
+        locationsNeighborhoodMap: Dictionary mapping neighborhood-location to location_id.
+    """
+    # Fill missing neighborhood/location
+    listingsDF['neighbourhood_cleansed'] = listingsDF['neighbourhood_cleansed'].fillna('Not Specified')
+    listingsDF['location'] = 'Boston, MA'
 
+    hostsSubset = listingsData[['host_neighbourhood', 'host_location']].copy()
+    hostsSubset['host_neighbourhood'] = np.where(
+        (hostsSubset['host_location'].isna()) & (hostsSubset['host_neighbourhood'].isna()),
+        'Unknown',
+        hostsSubset['host_neighbourhood']
+    )
+    hostsSubset['host_neighbourhood'] = hostsSubset['host_neighbourhood'].fillna('Not Specified')
+    hostsSubset['host_location'] = np.where(
+        (hostsSubset['host_location'].isna()) & (hostsSubset['host_neighbourhood'] == 'Unknown'),
+        'Unknown',
+        hostsSubset['host_location']
+    )
+    hostsSubset['host_location'] = hostsSubset['host_location'].fillna('Boston, MA')
+
+    # Build location table
+    locationsDF = hostsSubset.drop_duplicates().reset_index(drop=True).rename(
+        columns={'host_neighbourhood': 'neighbourhood', 'host_location': 'location'}
+    )
+    listingsLocationDF = listingsDF[['neighbourhood_cleansed', 'location']].drop_duplicates().reset_index(drop=True)
+    listingsLocationDF = listingsLocationDF.rename(columns={'neighbourhood_cleansed': 'neighbourhood', 'location': 'location'})
+
+    locationsDF = pd.concat([locationsDF, listingsLocationDF], ignore_index=True).drop_duplicates().reset_index(drop=True)
+    locationsDF = locationsDF.reset_index().rename(columns={'index': 'location_id'})
+    locationsDF['location_id'] = locationsDF['location_id'] + 1
+    locationsDF.rename(columns={'neighbourhood': 'neighborhood'}, inplace=True)
+
+    # Build mapping
+    locationsNeighborhoodMap = dict(zip(
+        locationsDF['neighborhood'] + ', ' + locationsDF['location'],
+        locationsDF['location_id']
+    ))
+
+    return locationsDF, locationsNeighborhoodMap
+
+
+def process_hosts(listingsData, locationsNeighborhoodMap):
+    """
+    Processes the hosts data from the listings DataFrame to create hosts DataFrame.
+    
+    Parameters:
+        listingsData: DataFrame containing the raw listings data.
+        locationsNeighborhoodMap: Dictionary mapping neighborhood-location to location_id.
+    
+    Returns:
+        hostsDF: DataFrame containing cleaned hosts data.
+    """
+    
+    hostsColumns = [
+        'host_id', 'host_name', 'host_url','host_since', 'host_location','host_about',
+        'host_response_time','host_response_rate', 'host_acceptance_rate', 'host_is_superhost',
+        'host_thumbnail_url','host_picture_url','host_neighbourhood', 'host_total_listings_count',
+        'host_has_profile_pic', 'host_identity_verified','host_verifications'
+    ]
     hostsDF = listingsData[hostsColumns].copy()
-
-    # Filling in missing values for location related columns
+    
     hostsDF['host_neighbourhood'] = np.where((hostsDF['host_location'].isna())&(hostsDF['host_neighbourhood'].isna()), 'Unknown', hostsDF['host_neighbourhood'])
     hostsDF['host_neighbourhood'] = hostsDF['host_neighbourhood'].fillna('Not Specified')
 
     hostsDF['host_location'] = np.where((hostsDF['host_location'].isna()) & (hostsDF['host_neighbourhood'] == 'Unknown'), 'Unknown', hostsDF['host_location'])
     hostsDF['host_location'] = hostsDF['host_location'].fillna('Boston, MA')
-    
-    listingsDF['neighbourhood_cleansed'] = listingsDF['neighbourhood_cleansed'].fillna('Not Specified')
-    listingsDF['location'] = 'Boston, MA'
-    
 
-
-    # Creating a DataFrame for locations
-    locationsDF = hostsDF[['host_neighbourhood','host_location']].drop_duplicates().reset_index(drop=True).rename(columns={'host_neighbourhood': 'neighbourhood', 'host_location': 'location'})
-
-    listingsLocationDF = listingsDF[['neighbourhood_cleansed', 'location']].drop_duplicates().reset_index(drop=True).rename(columns={'neighbourhood_cleansed': 'neighbourhood', 'location': 'location'})
-
-    locationsDF = pd.concat([locationsDF, listingsLocationDF], ignore_index=True).drop_duplicates().reset_index(drop=True).reset_index().rename(columns={'index': 'location_id'})
-    locationsDF['location_id'] = locationsDF['location_id'] + 1
-    
-    
-    # Mapping hosts data with locations
-    logging.info("Mapping hosts and listings data with locations...")
-    locationsNeighborhoodMap = dict(zip(locationsDF['neighbourhood']+', '+ locationsDF['location'], locationsDF['location_id']))
-
-    hostsDF['location_id'] = hostsDF.apply(lambda row: locationsNeighborhoodMap[row['host_neighbourhood'] + ', ' + row['host_location']], axis=1)
-
+    # Map to location_id
+    hostsDF['location_id'] = hostsDF.apply(
+        lambda row: locationsNeighborhoodMap[row['host_neighbourhood'] + ', ' + row['host_location']],
+        axis=1
+    )
     hostsDF.drop(columns=['host_neighbourhood', 'host_location'], inplace=True)
-    
-    hostsDF['host_about'] = hostsDF['host_about'].astype(str)
-    
-    hostsDF['host_about'] = hostsDF['host_about'].replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True)
-    
-    hostsDF['host_about'] = hostsDF['host_about'].str.strip()
-    
+
+    # Clean host fields
+    hostsDF['host_about'] = hostsDF['host_about'].astype(str).replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True).str.strip()
     hostsDF['host_about'] = hostsDF['host_about'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
 
     hostsDF['host_name'] = hostsDF['host_name'].fillna('Unknown Host')
-
-    hostsDF['host_is_superhost'] = hostsDF['host_is_superhost'].apply(lambda x: True if x == 't' else False)
-    hostsDF['host_has_profile_pic'] = hostsDF['host_has_profile_pic'].apply(lambda x: True if x == 't' else False)
-    hostsDF['host_identity_verified'] = hostsDF['host_identity_verified'].apply(lambda x: True if x == 't' else False)
+    hostsDF['host_is_superhost'] = hostsDF['host_is_superhost'].apply(lambda x: x == 't')
+    hostsDF['host_has_profile_pic'] = hostsDF['host_has_profile_pic'].apply(lambda x: x == 't')
+    hostsDF['host_identity_verified'] = hostsDF['host_identity_verified'].apply(lambda x: x == 't')
     hostsDF['host_response_rate'] = hostsDF['host_response_rate'].str.replace('%', '').astype(float)
     hostsDF['host_acceptance_rate'] = hostsDF['host_acceptance_rate'].str.replace('%', '').astype(float)
-    
+
+    # Re-index hosts
     hostsDF['host_id'] = pd.to_numeric(hostsDF['host_id'], errors='coerce')
     hostsDF.dropna(subset=['host_id'], inplace=True)
     hostsDF['host_id'] = hostsDF['host_id'].astype(int)
     hostsDF['host_cid'] = hostsDF['host_id'].astype(str)
     hostsDF.drop(columns=['host_id'], inplace=True)
-    
+
     hostsDF.drop_duplicates(inplace=True)
     hostsDF = hostsDF.reset_index(drop=True).reset_index().rename(columns={'index': 'host_id'})
     hostsDF['host_id'] = hostsDF['host_id'] + 1000
     hostsDF['host_id'] = hostsDF['host_id'].astype(int)
-    
-    hostsDF = hostsDF[['host_id', 'host_cid', 'host_name', 'host_url', 'host_since', 'location_id', 'host_about',
+
+    hostsDF = hostsDF[[
+        'host_id', 'host_cid', 'host_name', 'host_url', 'host_since', 'location_id', 'host_about',
         'host_response_time', 'host_response_rate', 'host_acceptance_rate',
         'host_is_superhost', 'host_thumbnail_url', 'host_picture_url',
         'host_total_listings_count', 'host_verifications', 'host_has_profile_pic',
-        'host_identity_verified']]
+        'host_identity_verified'
+    ]]
     
     hostsDF.drop_duplicates(inplace=True)
+
+    return hostsDF
+
+
+def final_process_listings(listingsDF, hostsDF, locationsNeighborhoodMap):
+    """ 
+    Final processing of listings DataFrame to clean and transform it into a suitable format to insert into the database's listings table.
     
-
-    # Mapping listings data with locations
-    logging.info("Mapping listings data with locations...")
-    listingsDF['location_id'] = listingsDF.apply(lambda row: locationsNeighborhoodMap[row['neighbourhood_cleansed'] + ', ' + row['location']], axis=1)
-
+    Parameters:
+        listingsDF: DataFrame containing the cleaned listings data.
+        hostsDF: DataFrame containing the cleaned hosts data.
+        locationsNeighborhoodMap: Dictionary mapping neighborhood-location to location_id.
+    
+    Returns:
+        listingsDF: DataFrame containing cleaned listings data.
+    """
+    logging.info("Final processing of listings data...")
+    listingsDF['neighbourhood_cleansed'] = listingsDF['neighbourhood_cleansed'].fillna('Not Specified')
+    listingsDF['location'] = 'Boston, MA'
+    
+    # Map listings to locations
+    listingsDF['location_id'] = listingsDF.apply(
+        lambda row: locationsNeighborhoodMap[row['neighbourhood_cleansed'] + ', ' + row['location']],
+        axis=1
+    )
     listingsDF.drop(columns=['neighbourhood_cleansed', 'location'], inplace=True)
-    
+
+    # Map host IDs
     listingsDF['host_cid'] = listingsDF['host_id']
-    
     hostcidMap = dict(zip(hostsDF['host_cid'], hostsDF['host_id']))
     listingsDF['host_cid'] = listingsDF['host_cid'].astype(str)
-    listingsDF['host_id'] = listingsDF['host_cid'].map(hostcidMap)
-    listingsDF['host_id'] = listingsDF['host_id'].astype(int)
+    listingsDF['host_id'] = listingsDF['host_cid'].map(hostcidMap).astype(int)
 
-    listingsDF = listingsDF[['listing_id', 'listing_cid', 'name', 'description', 'host_id', 'listing_url',
+    # Clean listing fields
+    listingsDF['description'] = listingsDF['description'].astype(str).replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True).str.strip()
+    listingsDF['description'] = listingsDF['description'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
+
+    listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
+
+    listingsDF['listing_id'] = pd.to_numeric(listingsDF['listing_id'], errors='coerce')
+    listingsDF.dropna(subset=['listing_id'], inplace=True)
+    listingsDF['listing_id'] = listingsDF['listing_id'].astype(int)
+
+    listingsDF.drop_duplicates(inplace=True)
+    listingsDF = listingsDF.drop_duplicates(subset=['listing_id'], keep='first')
+
+    # Select final schema
+    listingsDF = listingsDF[[
+        'listing_id', 'listing_cid', 'name', 'description', 'host_id', 'listing_url',
         'location_id', 'neighborhood_overview', 'picture_url',
         'latitude', 'longitude', 'property_type', 'room_type', 'accommodates',
         'bathrooms', 'bedrooms', 'bathroom_type', 'beds', 'amenities', 'license',
         'overall_rating', 'accuracy_rating', 'cleanliness_rating',
         'checkin_rating', 'communication_rating', 'location_rating',
-        'value_rating', 'number_of_reviews']]
+        'value_rating', 'number_of_reviews'
+    ]]
+
+    return listingsDF
+
+
+
+def process_hosts_and_locations(listingsData, listingsDF):
+    """
+    Processes the hosts and locations data from the listings DataFrame to create hosts and locations DataFrames. Also finalizes the listings DataFrame.
     
-    listingsDF['description'] = listingsDF['description'].astype(str)
+    Parameters:
+        listingsData: DataFrame containing the raw listings data.
+        listingsDF: DataFrame containing the cleaned listings data.
     
-    listingsDF['description'] = listingsDF['description'].replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True)
-    
-    listingsDF['description'] = listingsDF['description'].str.strip()
-    
-    listingsDF['description'] = listingsDF['description'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
-    
-    listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
-    
-    listingsDF['listing_id'] = pd.to_numeric(listingsDF['listing_id'], errors='coerce')
-    listingsDF.dropna(subset=['listing_id'], inplace=True)
-    listingsDF['listing_id'] = listingsDF['listing_id'].astype(int)
-    
-    listingsDF.drop_duplicates(inplace=True)
-    listingsDF = listingsDF.drop_duplicates(subset=['listing_id'], keep='first')
-    
-    locationsDF.rename(columns={'neighbourhood': 'neighborhood'}, inplace=True)
-    
+    Returns:
+        hostsDF: DataFrame containing cleaned hosts data.
+        locationsDF: DataFrame containing cleaned locations data.
+        listingsDF: DataFrame containing cleaned listings data.
+        listingsCIDMap: Dictionary mapping listing_cid to listing_id.
+    """
+    logging.info("Processing hosts and locations data from listings data...")
+
+    # Process locations
+    locationsDF, locationsNeighborhoodMap = process_locations(listingsData, listingsDF)
+
+    # Process hosts
+    hostsDF = process_hosts(listingsData, locationsNeighborhoodMap)
+
+    # Process listings
+    listingsDF = final_process_listings(listingsDF, hostsDF, locationsNeighborhoodMap)
+
+    # Create CID-ID map
     listingsCIDMap = dict(zip(listingsDF['listing_cid'], listingsDF['listing_id']))
 
-    
-    return listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF, listingsCIDMap
+    return listingsDF, hostsDF, locationsDF, listingsCIDMap
 
 
 
