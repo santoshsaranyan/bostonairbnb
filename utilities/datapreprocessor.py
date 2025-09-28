@@ -155,7 +155,7 @@ def preprocess_listings_data():
     """
 
     # Load listings data
-    listingsData = load_listings_data("data/listings.csv.gz")
+    listingsData = load_listings_data()
 
     # Clean listings table
     listingsDF = process_listings(listingsData)
@@ -183,7 +183,7 @@ def load_listings_data():
     
     logging.info("Processing listings data...")
     
-    listingsData = read_data('data/listings.csv.gz')
+    listingsData = read_data('data/downloads/listings.csv.gz')
     
     listingsData = listingsData.reset_index().rename(columns={'index': 'listing_id'})
     listingsData['listing_id'] = listingsData['listing_id'] + 1000 
@@ -549,7 +549,7 @@ def preprocess_reviews_data(listingsCIDMap):
     """
 
     logging.info("Processing reviews data...")
-    reviewsData = read_data('data/reviews.csv.gz')
+    reviewsData = read_data('data/downloads/reviews.csv.gz')
 
     reviewsData.rename(columns={'id':'review_cid', 'listing_id':'listing_cid'}, inplace=True)
     
@@ -610,7 +610,7 @@ def preprocess_calendar_data(listingsCIDMap):
         calendarData: DataFrame containing cleaned calendar (availability) data.
     """
     logging.info("Processing calendar data...")
-    calendarData = read_data('data/calendar.csv.gz')
+    calendarData = read_data('data/downloads/calendar.csv.gz')
     
     calendarData.rename(columns={'listing_id':'listing_cid'}, inplace=True)
     
