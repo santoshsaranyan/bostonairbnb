@@ -5,12 +5,13 @@ import urllib.request
 import os
 import logging
 import time
+import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def main():
+def scrape_data():
     
     # Define the URL to scrape
     url = "https://insideairbnb.com/get-the-data/"
@@ -43,12 +44,14 @@ def fetch_html(url: str, max_retries: int = 3, backoff_factor: float = 1.0) -> N
                 try:
                     boston = soup.find('table',class_='data table table-hover table-striped boston')
                     table_rows = boston.find('tbody').find_all('tr')
+                    logging.info(f"Found {len(table_rows)} rows in the table.")
                     
                     for row in table_rows:
                         try:
                             link_item = row.find('a', href=True)
                             link = link_item['href']
                             if '/data/' in link:
+                                logging.info(f"Downloading file from link: {link}")
                                 download_file(link)
                                 
                         except Exception as e:
@@ -56,16 +59,18 @@ def fetch_html(url: str, max_retries: int = 3, backoff_factor: float = 1.0) -> N
                         
                 except Exception as e:
                     logging.info(f"Error parsing HTML: {e}")
+                
+                break
                         
         except Exception as e:
             logging.info(f"Error fetching the URL: {e}")
         
-        # Backoff before next retry
-        if attempt < max_retries:
-            # Delay with exponential backoff
-            delay = backoff_factor * (2 ** (attempt - 1))
-            logging.info(f"Retrying in {delay:.1f} seconds...")
-            time.sleep(delay)
+            # Backoff before next retry
+            if attempt < max_retries:
+                # Delay with exponential backoff
+                delay = backoff_factor * (2 ** (attempt - 1))
+                logging.info(f"Retrying in {delay:.1f} seconds...")
+                time.sleep(delay)
         else:
             logging.error("Max retries exceeded. Failed to fetch URL.")
         
@@ -82,14 +87,17 @@ def download_file(link: str) -> None:
     """
     
     # Create destination folder if it doesn't exist
-    save_folder = '../data/downloads'
+    save_folder = 'data/downloads'
     os.makedirs(save_folder, exist_ok=True)
 
     filename = os.path.join(save_folder, link.split('/')[-1])
     
     # Download the file
     try:
-        urllib.request.urlretrieve(link, filename)
+        response = requests.get(link)
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+            
         logging.info(f"File downloaded and saved to: {filename}")
         
     except Exception as e:
@@ -97,4 +105,4 @@ def download_file(link: str) -> None:
 
     
 if __name__ == "__main__":
-    main()
+    scrape_data()
