@@ -15,7 +15,7 @@ This script reads data from gzipped CSV files, and preprocesses them to clean an
 The cleaned data is then saved as CSV files.
 """
 
-def main():
+def preprocess_data():
     
     start = time.time()
     
@@ -635,7 +635,7 @@ def preprocess_calendar_data(listingsCIDMap):
 
 
 if __name__ == "__main__":
-    main() 
+    preprocess_data() 
 
 
 

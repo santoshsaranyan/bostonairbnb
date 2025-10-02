@@ -41,37 +41,14 @@ def main() -> None:
     connectionStr = f'mysql+pymysql://{user}:{password}@127.0.0.1:3306/{db_name}'
     print(connectionStr)
     mySQLEngine = create_engine(connectionStr, echo=True)
+    logging.info("Connected to the database successfully.")
     
     # # Create the database tables.
     create_all_tables(mySQLEngine)
     
-    # Read data from CSV files and insert it into the database.
-    insert_data_to_table(mySQLEngine)
-    
     end = time.time()
     
     logging.info(f"Script executed in {end - start:.2f} seconds.")
-    
-    
-
-def read_data(filePath: str) -> pd.DataFrame:
-    """
-    Reads data from a CSV file and returns it as a pandas DataFrame.
-    
-    Parameters:
-        filePath: Path to the CSV file.
-        
-    Returns:
-        data: pandas DataFrame containing the data.
-    """
-    
-    try:
-        data = pd.read_csv(filePath)
-        return data
-    
-    except Exception as e:
-        logging.info(f"Error reading the file: {e}")
-        return pd.DataFrame() 
     
     
 
@@ -415,65 +392,6 @@ def create_all_tables(engine) -> None:
     
     logging.info("All tables created successfully.")
     
-    
-    
-def insert_data_to_table(engine) -> None:
-    """
-    Reads data from CSV files and inserts it into the database.
-    
-    Parameters:
-        engine: SQLAlchemy engine object.
-        
-    Returns:
-        None
-    """
-    
-    # Read data from CSV files
-    logging.info("Reading data from CSV files...")
-    listingsData = read_data('data/cleaned_listings.csv')
-    reviewsData = read_data('data/cleaned_reviews.csv')
-    hostsData = read_data('data/cleaned_hosts.csv')
-    locationsData = read_data('data/cleaned_locations.csv')
-    availabilityData = read_data('data/cleaned_availability.csv')
-    amenitiesData = read_data('data/cleaned_amenities.csv')
-    listingAmenitiesData = read_data('data/cleaned_listing_amenities.csv')
-    logging.info("Data read successfully.")
-    
-    
-    # Insert data into the database tables
-    logging.info("Inserting data into the database...")
-    if not locationsData.empty:
-        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
-        logging.info("Locations data inserted successfully.")
-        
-    if not hostsData.empty:
-        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
-        logging.info("Hosts data inserted successfully.")
-        
-        
-    if not listingsData.empty:
-        listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
-        logging.info("Listings data inserted successfully.")
-        
-    if not reviewsData.empty:
-        reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
-        logging.info("Reviews data inserted successfully.")
-        
-    if not amenitiesData.empty:
-        amenitiesData.to_sql('amenities', con=engine, if_exists='append', index=False)
-        logging.info("Amenities data inserted successfully.")
-        
-        
-    if not availabilityData.empty:
-        availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
-        logging.info("Availability data inserted successfully.")
-    
-    if not listingAmenitiesData.empty:
-        listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)
-        logging.info("Listing amenities data inserted successfully.")
-        
-    else:
-        logging.info("No data to insert into the database.")
 
 
 
