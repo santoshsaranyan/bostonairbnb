@@ -14,6 +14,7 @@ password = examplepassword123
 db_name = airbnbdatabase
 ```
 - In the terminal run the following command: `docker build -t bostonbnbapp . && docker run --rm --env-file .env -p 8501:8501 bostonbnbapp & open http://localhost:8501`
+
 To run the Database Table Creator (Soon to be Changed)
 - (Optional) Create a virtual environment: `python -m venv .venv`. To activate it: `.venv\Scripts\activate` for Windows or `source .venv/bin/activate` for macOS and Linux. (Creating a virtual environment is strongly recommended to install packages into)
 - Install required packages using: `pip install -r requirements.txt`
