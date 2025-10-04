@@ -1,8 +1,8 @@
 *[This Project is a Work in Progress]*
 # Analysis of Boston Airbnb data
 
-### 2025-10-03 Progress Update
-- Created a streamlit based frontend to run the Pipeline
+### 2025-10-04 Progress Update
+- Added steps to create a docker image for ease of running
 
 ### Instructions to run the code:
 - Open Command Prompt or Terminal (Or a prefered code editor)
