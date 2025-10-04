@@ -8,12 +8,11 @@ import time
 import textwrap
 
 # Set the path to the .env file
-env_path = os.path.join(os.path.dirname(__file__), '.env')
-
-print(env_path)
+# env_path = os.path.join(os.path.dirname(__file__), '.env')
 
 # Load the environment variables from the .env file
-load_dotenv(dotenv_path=env_path)
+# load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/dbcreator.log"),logging.StreamHandler()])
