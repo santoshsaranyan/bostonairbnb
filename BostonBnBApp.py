@@ -14,7 +14,7 @@ with st.sidebar:
     st.sidebar.title("About")
     st.markdown("""
     This application demonstrates a complete data pipeline for Boston AirBnB listings, including data scraping, preprocessing, and loading into a MySQL database. The pipeline consists of three main steps:
-    1. **Data Scraping**: Fetches the latest AirBnB data from [InsideAirBnB](http://insideairbnb.com/get-the-data/) and downloads the relevant CSV files.
+    1. **Data Scraping**: Fetches the latest AirBnB data from [InsideAirBnB](http://insideairbnb.com/get-the-data/) and downloads the relevant CSV files. The data is generated quarterly by the source and is of the last 12 months.
     2. **Data Preprocessing**: Cleans and preprocesses the downloaded data to ensure it is ready for analysis and storage.
     3. **Database Loading**: Loads the cleaned data into a MySQL database for further analysis and querying.
     """)
@@ -45,7 +45,7 @@ st.markdown(htmllib.html_2, unsafe_allow_html=True)
 
 # Header
 st.markdown("<div class='pipeline-title'>Data Pipeline</div>", unsafe_allow_html=True)
-st.markdown("<div class='pipeline-sub'>Follow the steps to scrape, preprocess, and load your data.</div>", unsafe_allow_html=True)
+st.markdown("<div class='pipeline-sub'>Follow the steps to scrape, preprocess, and load data.</div>", unsafe_allow_html=True)
 
 download_folder = "data/downloads"
 if os.path.exists(download_folder) and len(os.listdir(download_folder)) > 0:
@@ -69,7 +69,7 @@ st.markdown(
 
 # Data Scraper
 with st.expander("Step 1: Data Scraper", expanded=True):
-    st.write("Collect data from the source and store locally.")
+    st.write("Collect data from the source.")
     if st.session_state.step1_done:
         st.success("✅ Scrape completed")
     if st.button("Run Scraper", key="step1_btn"):
