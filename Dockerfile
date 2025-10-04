@@ -12,6 +12,10 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p logs \
+    && mkdir -p data/downloads \
+    && mkdir -p data/cleaned
+
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
