@@ -2,7 +2,8 @@
 .conda
 .venv
 **/__pycache__/
-/__pycache__/
+__pycache__/
+archive/
 .ipynb_checkpoints
 .pdf
 .html
