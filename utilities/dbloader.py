@@ -16,7 +16,7 @@ print(env_path)
 load_dotenv(dotenv_path=env_path)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/dbloader.log"),logging.StreamHandler()])
 
 # Get database credentials from environment variables
 user = os.getenv('user')

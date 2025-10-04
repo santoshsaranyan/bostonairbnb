@@ -8,8 +8,12 @@ import time
 import requests
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler("logs/scraper.log"),logging.StreamHandler()])
 
+"""
+This script scrapes data files from the InsideAirbnb website for Boston listings.
+It downloads the relevant CSV files and saves them to the 'data/downloads' directory.
+"""
 
 def scrape_data():
     
