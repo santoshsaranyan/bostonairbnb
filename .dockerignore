@@ -1,0 +1,15 @@
+.env
+.conda
+.venv
+**/__pycache__/
+/__pycache__/
+.ipynb_checkpoints
+.pdf
+.html
+.ipynb
+.csv
+.csv.gz
+.geojson
+.gitignore
+*.md
+.pytest_cache
