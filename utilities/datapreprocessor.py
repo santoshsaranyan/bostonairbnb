@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import csv
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/preprocessor.log"),logging.StreamHandler()])
 
 """
 This script reads data from gzipped CSV files, and preprocesses them to clean and transform the data into suitable formats to insert into database tables.
@@ -26,13 +26,13 @@ def preprocess_data():
     
     logging.info("Data processing completed. Saving cleaned data to CSV files...")
     
-    save_data(listingsDF, 'data/cleaned_listings.csv')
-    save_data(hostsDF, 'data/cleaned_hosts.csv')
-    save_data(locationsDF, 'data/cleaned_locations.csv')
-    save_data(amenityDF, 'data/cleaned_amenities.csv')
-    save_data(listingAmenitiesDF, 'data/cleaned_listing_amenities.csv')
-    save_data(reviewsDF, 'data/cleaned_reviews.csv')
-    save_data(calendar_df, 'data/cleaned_availability.csv')
+    save_data(listingsDF, 'data/cleaned/cleaned_listings.csv')
+    save_data(hostsDF, 'data/cleaned/cleaned_hosts.csv')
+    save_data(locationsDF, 'data/cleaned/cleaned_locations.csv')
+    save_data(amenityDF, 'data/cleaned/cleaned_amenities.csv')
+    save_data(listingAmenitiesDF, 'data/cleaned/cleaned_listing_amenities.csv')
+    save_data(reviewsDF, 'data/cleaned/cleaned_reviews.csv')
+    save_data(calendar_df, 'data/cleaned/cleaned_availability.csv')
     
     logging.info("Cleaned data saved.")
     
@@ -484,10 +484,7 @@ def final_process_listings(listingsDF, hostsDF, locationsNeighborhoodMap):
     listingsDF['listing_id'] = pd.to_numeric(listingsDF['listing_id'], errors='coerce')
     listingsDF.dropna(subset=['listing_id'], inplace=True)
     listingsDF['listing_id'] = listingsDF['listing_id'].astype(int)
-
-    listingsDF.drop_duplicates(inplace=True)
-    listingsDF = listingsDF.drop_duplicates(subset=['listing_id'], keep='first')
-
+    
     # Select final schema
     listingsDF = listingsDF[[
         'listing_id', 'listing_cid', 'name', 'description', 'host_id', 'listing_url',
@@ -498,6 +495,9 @@ def final_process_listings(listingsDF, hostsDF, locationsNeighborhoodMap):
         'checkin_rating', 'communication_rating', 'location_rating',
         'value_rating', 'number_of_reviews'
     ]]
+    
+    listingsDF.drop_duplicates(inplace=True)
+    listingsDF = listingsDF.drop_duplicates(subset=['listing_id'], keep='first')
 
     return listingsDF
 
