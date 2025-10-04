@@ -4,6 +4,8 @@
 **/__pycache__/
 __pycache__/
 archive/
+data/
+logs/
 .ipynb_checkpoints
 .pdf
 .html
