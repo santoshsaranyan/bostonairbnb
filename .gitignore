@@ -19,6 +19,7 @@ archivecode.py
 build/
 develop-eggs/
 dist/
+archive/
 downloads/
 eggs/
 .eggs/

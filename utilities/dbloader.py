@@ -28,22 +28,22 @@ if not user or not password or not db_name:
 
 
 """
-This script creates a MySQL database and its tables, reads data from CSV files, and inserts the data into the database.
-It uses SQLAlchemy for database operations and pandas for data manipulation.
+This script reads data from CSV files, and inserts the data into the PostgreSQL database.
+It uses SQLAlchemy for help with database operations and pandas for data manipulation.
 """
 
 def load_data() -> None:
     
     start = time.time()
     
-    # Creates a connection to a MySQL database.
-    connectionStr = f'mysql+pymysql://{user}:{password}@127.0.0.1:3306/{db_name}'
+    # Creates a connection to a PostgreSQL database.
+    connectionStr = f'postgresql+psycopg2://{user}:{password}@postgres:5432/{db_name}'
     print(connectionStr)
-    mySQLEngine = create_engine(connectionStr, echo=True)
-    logging.info("Connected to the database successfully.")
+    PostgreSQLEngine = create_engine(connectionStr, echo=True)
+    logging.info("Connected to the PostgreSQL database successfully.")
     
     # Read data from CSV files and insert it into the database.
-    insert_data_to_table(mySQLEngine)
+    insert_data_to_table(PostgreSQLEngine)
     
     end = time.time()
     

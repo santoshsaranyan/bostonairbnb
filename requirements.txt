@@ -23,7 +23,6 @@ jsonschema==4.25.1
 jsonschema-specifications==2025.9.1
 lxml==6.0.2
 MarkupSafe==3.0.3
-mysql-connector-python==9.3.0
 narwhals==2.6.0
 numpy==2.2.6
 packaging==25.0
@@ -33,7 +32,6 @@ protobuf==6.32.1
 pyarrow==21.0.0
 pycparser==2.22
 pydeck==0.9.1
-PyMySQL==1.1.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
 pytz==2025.2
@@ -55,3 +53,4 @@ tornado==6.5.2
 typing_extensions==4.14.0
 tzdata==2025.2
 urllib3==2.5.0
+psycopg2-binary==2.9.7
