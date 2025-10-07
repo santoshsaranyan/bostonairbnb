@@ -26,6 +26,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      POSTGRES_USER: ${user}
+      POSTGRES_PASSWORD: ${password}
+      POSTGRES_DB: ${db_name}
     ports:
       - "8501:8501"
     volumes:
