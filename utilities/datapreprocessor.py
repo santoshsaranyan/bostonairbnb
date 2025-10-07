@@ -164,7 +164,7 @@ def preprocess_listings_data():
     amenityDF, listingAmenitiesDF = process_amenities(listingsDF)
 
     # Process hosts and locations
-    hostsDF, locationsDF, listingsDF, listingsCIDMap = process_hosts_and_locations(listingsData, listingsDF)
+    listingsDF, hostsDF, locationsDF, listingsCIDMap = process_hosts_and_locations(listingsData, listingsDF)
 
     return listingsDF, hostsDF, locationsDF, amenityDF, listingAmenitiesDF, listingsCIDMap
 
