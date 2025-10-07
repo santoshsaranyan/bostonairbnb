@@ -85,13 +85,13 @@ def insert_data_to_table(engine) -> None:
     
     # Read data from CSV files
     logging.info("Reading data from CSV files...")
-    listingsData = read_data('data/cleaned_listings.csv')
-    reviewsData = read_data('data/cleaned_reviews.csv')
-    hostsData = read_data('data/cleaned_hosts.csv')
-    locationsData = read_data('data/cleaned_locations.csv')
-    availabilityData = read_data('data/cleaned_availability.csv')
-    amenitiesData = read_data('data/cleaned_amenities.csv')
-    listingAmenitiesData = read_data('data/cleaned_listing_amenities.csv')
+    locationsData = read_data('data/cleaned/cleaned_locations.csv')
+    hostsData = read_data('data/cleaned/cleaned_hosts.csv')
+    listingsData = read_data('data/cleaned/cleaned_listings.csv')
+    reviewsData = read_data('data/cleaned/cleaned_reviews.csv')
+    amenitiesData = read_data('data/ccleaned/leaned_amenities.csv')
+    listingAmenitiesData = read_data('data/cleaned/cleaned_listing_amenities.csv')
+    availabilityData = read_data('data/cleaned/cleaned_availability.csv')
     logging.info("Data read successfully.")
     
     

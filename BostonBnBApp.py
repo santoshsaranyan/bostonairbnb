@@ -19,22 +19,6 @@ with st.sidebar:
     3. **Database Loading**: Loads the cleaned data into a MySQL database for further analysis and querying.
     """)
     
-        
-    st.markdown("""
-    ### Instructions to Run the Application
-    1. Ensure you have Python installed on your machine.
-    2. Install the required libraries using pip: `pip install -r requirements.txt`
-    3. Set up a MySQL database and update the connection details in the environment variables.env file.
-    4. Run the Streamlit application using the command: `streamlit run BostonBnBApp.py`
-    5. Click the "Run Data Pipeline" button to execute the entire data pipeline.
-    """)
-
-    st.markdown("""
-    ### Note
-    - Ensure that your MySQL server is running and accessible.
-    - The application uses environment variables to manage sensitive information like database credentials. Make sure to set these up correctly before running the application.
-    """)
-    
     
 for step in ["step1_done", "step2_done", "step3_done"]:
     if step not in st.session_state:
@@ -91,7 +75,7 @@ with st.expander("Step 2: Data Preprocessor", expanded=True):
 
 # DB Loader
 with st.expander("Step 3: DB Loader", expanded=True):
-    st.write("Load the processed data into your target database.")
+    st.write("Load the processed data into the database.")
     if st.session_state.step3_done:
         st.success("✅ Load completed")
     if st.button("Run Loader", key="step3_btn"):
