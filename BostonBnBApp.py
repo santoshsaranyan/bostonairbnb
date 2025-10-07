@@ -13,10 +13,10 @@ with st.sidebar:
     st.image("https://t3.ftcdn.net/jpg/05/89/24/50/360_F_589245011_2eyvpGgTRGZT3Hw4ScUj9QPwvOLp3XsQ.jpg", width=150)
     st.sidebar.title("About")
     st.markdown("""
-    This application demonstrates a complete data pipeline for Boston AirBnB listings, including data scraping, preprocessing, and loading into a MySQL database. The pipeline consists of three main steps:
+    This application demonstrates a complete data pipeline for Boston AirBnB listings, including data scraping, preprocessing, and loading into a PostgreSQL database. The pipeline consists of three main steps:
     1. **Data Scraping**: Fetches the latest AirBnB data from [InsideAirBnB](http://insideairbnb.com/get-the-data/) and downloads the relevant CSV files. The data is generated quarterly by the source and is of the last 12 months.
     2. **Data Preprocessing**: Cleans and preprocesses the downloaded data to ensure it is ready for analysis and storage.
-    3. **Database Loading**: Loads the cleaned data into a MySQL database for further analysis and querying.
+    3. **Database Loading**: Loads the cleaned data into a PostgreSQL database for further analysis and querying.
     """)
     
     
