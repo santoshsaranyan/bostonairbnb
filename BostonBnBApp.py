@@ -7,82 +7,61 @@ import os
 
 st.set_page_config(page_title="Boston AirBnB Data Pipeline", layout="wide", page_icon="🏠")
 
-st.title("🏘️ Boston AirBnB Data Pipeline")
+st.title("🏘️ Welcome to the Boston BnB App!")
 
 with st.sidebar:
     st.image("https://t3.ftcdn.net/jpg/05/89/24/50/360_F_589245011_2eyvpGgTRGZT3Hw4ScUj9QPwvOLp3XsQ.jpg", width=150)
-    st.sidebar.title("About")
+    st.divider()
+
+    st.header("How to Use")
     st.markdown("""
-    This application demonstrates a complete data pipeline for Boston AirBnB listings, including data scraping, preprocessing, and loading into a PostgreSQL database. The pipeline consists of three main steps:
-    1. **Data Scraping**: Fetches the latest AirBnB data from [InsideAirBnB](http://insideairbnb.com/get-the-data/) and downloads the relevant CSV files. The data is generated quarterly by the source and is of the last 12 months.
-    2. **Data Preprocessing**: Cleans and preprocesses the downloaded data to ensure it is ready for analysis and storage.
-    3. **Database Loading**: Loads the cleaned data into a PostgreSQL database for further analysis and querying.
+    1. Run each pipeline step in order  
+    2. View processed data and analytics  
+    3. Re-run steps anytime to refresh data
     """)
+
+    st.divider()
+
+    st.caption("Data Source: [InsideAirbnb](https://insideairbnb.com)")
+    st.caption("Last updated: October 2025")
     
-    
-for step in ["step1_done", "step2_done", "step3_done"]:
-    if step not in st.session_state:
-        st.session_state[step] = False
+st.markdown("""
+This Streamlit app demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**.
+""")
 
+st.info("""
+💡 *Navigate to the various pages using the top-left section of the sidebar*
+""")
 
-st.markdown(htmllib.html_2, unsafe_allow_html=True)
+st.subheader("🧱 Pipeline Overview")
 
-# Header
-st.markdown("<div class='pipeline-title'>Data Pipeline</div>", unsafe_allow_html=True)
-st.markdown("<div class='pipeline-sub'>Follow the steps to scrape, preprocess, and load data.</div>", unsafe_allow_html=True)
+st.markdown("""
+1. **Data Scraping**  
+   Retrieves the latest Boston Airbnb datasets directly from [InsideAirbnb](https://insideairbnb.com), which provides data for the past 12 months updated quarterly.
+2. **Data Preprocessing**  
+   Cleans, standardizes, and prepares the data for storage and analysis — handling missing values, formatting columns, and optimizing the dataset for database loading.
+3. **Database Loading**  
+   Loads the processed data into a **PostgreSQL** database (running inside a **Docker container**) for efficient querying and analytics.
+""")
 
-download_folder = "data/downloads"
-if os.path.exists(download_folder) and len(os.listdir(download_folder)) > 0:
-    st.session_state.step1_done = True
-    st.info("✅ Step 1 files already exist in the folder. You can proceed to Step 2.")
-    
-cleaned_folder = "data/cleaned"
-if os.path.exists(cleaned_folder) and len(os.listdir(cleaned_folder)) > 0:
-    st.session_state.step2_done = True
-    st.info("✅ Step 2 files already exist in the folder. You can proceed to Step 3.")
-    
-# Progress Bar
-completed = sum([st.session_state.step1_done,
-                 st.session_state.step2_done,
-                 st.session_state.step3_done])
-progress_pct = int((completed / 3) * 100)
-st.markdown(
-    f"<div class='progress-container'><div class='progress-bar' style='width:{progress_pct}%;'></div></div>",
-    unsafe_allow_html=True,
-)
+st.subheader("📊 Analysis and Visualization")
 
-# Data Scraper
-with st.expander("Step 1: Data Scraper", expanded=True):
-    st.write("Collect data from the source.")
-    if st.session_state.step1_done:
-        st.success("✅ Scrape completed")
-    if st.button("Run Scraper", key="step1_btn"):
-        with st.spinner("Scraping data..."):
-            scrape_data()
-        st.session_state.step1_done = True
-        st.rerun()
+st.markdown("""
+Once loaded, the data is used to generate insights and interactive visualizations on:
 
-# Data Preprocessor
-with st.expander("Step 2: Data Preprocessor", expanded=True):
-    st.write("Clean and prepare the data for loading.")
-    if st.session_state.step2_done:
-        st.success("✅ Preprocessing completed")
-    if st.button("Run Preprocessor", key="step2_btn"):
-        with st.spinner("Preprocessing data..."):
-            preprocess_data()
-        st.session_state.step2_done = True
-        st.rerun()
+- Listing prices and availability across neighborhoods  
+- Host activity and response behavior  
+- Seasonal and spatial trends within the Boston short-term rental market  
+""")
 
-# DB Loader
-with st.expander("Step 3: DB Loader", expanded=True):
-    st.write("Load the processed data into the database.")
-    if st.session_state.step3_done:
-        st.success("✅ Load completed")
-    if st.button("Run Loader", key="step3_btn"):
-        with st.spinner("Loading data into DB..."):
-            load_data()
-        st.session_state.step3_done = True
-        st.rerun()
-   
+st.subheader("⚙️ Technology Stack")
+
+st.markdown("""
+- **Python** - Data scraping, cleaning, and analysis  
+- **PostgreSQL** - Database management  
+- **Docker & Docker Compose** - Containerization  
+- **Streamlit** - Interactive web interface  
+""")
+
 
 st.markdown(htmllib.html_1, unsafe_allow_html=True)
