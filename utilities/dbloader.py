@@ -98,34 +98,55 @@ def insert_data_to_table(engine) -> None:
     # Insert data into the database tables
     logging.info("Inserting data into the database...")
     if not locationsData.empty:
-        locationsData.to_sql('locations', con=engine, if_exists='replace', index=False)
-        logging.info("Locations data inserted successfully.")
+        with engine.connect() as conn:
+            conn.execute(text("TRUNCATE TABLE locations RESTART IDENTITY CASCADE;"))
+            conn.commit()
+        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
+        logging.info("Locations data truncated and inserted successfully.")
         
     if not hostsData.empty:
-        hostsData.to_sql('hosts', con=engine, if_exists='replace', index=False)
-        logging.info("Hosts data inserted successfully.")
+        with engine.connect() as conn:
+            conn.execute(text("TRUNCATE TABLE hosts RESTART IDENTITY CASCADE;"))
+            conn.commit()
+        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
+        logging.info("Hosts data truncated and inserted successfully.")
         
         
     if not listingsData.empty:
-        listingsData.to_sql('listings', con=engine, if_exists='replace', index=False)
-        logging.info("Listings data inserted successfully.")
+        with engine.connect() as conn:
+            conn.execute(text("TRUNCATE TABLE listings RESTART IDENTITY CASCADE;"))
+            conn.commit()
+        listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
+        logging.info("Listings data truncated and inserted successfully.")
         
     if not reviewsData.empty:
-        reviewsData.to_sql('reviews', con=engine, if_exists='replace', index=False)
-        logging.info("Reviews data inserted successfully.")
+        with engine.connect() as conn:
+            conn.execute(text("TRUNCATE TABLE reviews RESTART IDENTITY CASCADE;"))
+            conn.commit()
+        reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
+        logging.info("Reviews data truncated and inserted successfully.")
         
     if not amenitiesData.empty:
-        amenitiesData.to_sql('amenities', con=engine, if_exists='replace', index=False)
-        logging.info("Amenities data inserted successfully.")
+        with engine.connect() as conn:
+            conn.execute(text("TRUNCATE TABLE amenities RESTART IDENTITY CASCADE;"))
+            conn.commit()
+        amenitiesData.to_sql('amenities', con=engine, if_exists='append', index=False)
+        logging.info("Amenities data truncated and inserted successfully.")
         
         
     if not availabilityData.empty:
-        availabilityData.to_sql('availability', con=engine, if_exists='replace', index=False)
-        logging.info("Availability data inserted successfully.")
+        with engine.connect() as conn:
+            conn.execute(text("TRUNCATE TABLE availability RESTART IDENTITY CASCADE;"))
+            conn.commit()
+        availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
+        logging.info("Availability data truncated and inserted successfully.")
     
     if not listingAmenitiesData.empty:
-        listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='replace', index=False)
-        logging.info("Listing amenities data inserted successfully.")
+        with engine.connect() as conn:
+            conn.execute(text("TRUNCATE TABLE listing_amenities RESTART IDENTITY CASCADE;"))
+            conn.commit()
+        listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)
+        logging.info("Listing amenities truncated and data inserted successfully.")
         
     else:
         logging.info("No data to insert into the database.")
