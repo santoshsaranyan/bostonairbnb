@@ -89,7 +89,7 @@ def insert_data_to_table(engine) -> None:
     hostsData = read_data('data/cleaned/cleaned_hosts.csv')
     listingsData = read_data('data/cleaned/cleaned_listings.csv')
     reviewsData = read_data('data/cleaned/cleaned_reviews.csv')
-    amenitiesData = read_data('data/ccleaned/leaned_amenities.csv')
+    amenitiesData = read_data('data/cleaned/cleaned_amenities.csv')
     listingAmenitiesData = read_data('data/cleaned/cleaned_listing_amenities.csv')
     availabilityData = read_data('data/cleaned/cleaned_availability.csv')
     logging.info("Data read successfully.")
@@ -98,33 +98,33 @@ def insert_data_to_table(engine) -> None:
     # Insert data into the database tables
     logging.info("Inserting data into the database...")
     if not locationsData.empty:
-        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
+        locationsData.to_sql('locations', con=engine, if_exists='replace', index=False)
         logging.info("Locations data inserted successfully.")
         
     if not hostsData.empty:
-        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
+        hostsData.to_sql('hosts', con=engine, if_exists='replace', index=False)
         logging.info("Hosts data inserted successfully.")
         
         
     if not listingsData.empty:
-        listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
+        listingsData.to_sql('listings', con=engine, if_exists='replace', index=False)
         logging.info("Listings data inserted successfully.")
         
     if not reviewsData.empty:
-        reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
+        reviewsData.to_sql('reviews', con=engine, if_exists='replace', index=False)
         logging.info("Reviews data inserted successfully.")
         
     if not amenitiesData.empty:
-        amenitiesData.to_sql('amenities', con=engine, if_exists='append', index=False)
+        amenitiesData.to_sql('amenities', con=engine, if_exists='replace', index=False)
         logging.info("Amenities data inserted successfully.")
         
         
     if not availabilityData.empty:
-        availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
+        availabilityData.to_sql('availability', con=engine, if_exists='replace', index=False)
         logging.info("Availability data inserted successfully.")
     
     if not listingAmenitiesData.empty:
-        listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)
+        listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='replace', index=False)
         logging.info("Listing amenities data inserted successfully.")
         
     else:
