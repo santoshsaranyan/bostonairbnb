@@ -36,7 +36,6 @@ CREATE TABLE IF NOT EXISTS hosts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_hosts_location_id ON hosts(location_id);
-CREATE INDEX IF NOT EXISTS idx_hosts_name ON hosts(host_name);
 
 -- Listings
 CREATE TABLE IF NOT EXISTS listings (
