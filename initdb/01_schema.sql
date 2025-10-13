@@ -5,12 +5,16 @@ CREATE TABLE IF NOT EXISTS locations (
     neighborhood TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_locations_name ON locations(location);
+CREATE INDEX IF NOT EXISTS idx_locations_neighborhood ON locations(neighborhood);
 
 -- Hosts
 CREATE TABLE IF NOT EXISTS hosts (
     host_id SERIAL PRIMARY KEY,
-    host_cid TEXT NOT NULL,
+    host_cid TEXT UNIQUE NOT NULL,
     host_name TEXT NOT NULL,
     host_url TEXT NOT NULL,
     host_since TEXT,
@@ -28,12 +32,16 @@ CREATE TABLE IF NOT EXISTS hosts (
     host_identity_verified BOOLEAN,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_hosts_location_id ON hosts(location_id);
+CREATE INDEX IF NOT EXISTS idx_hosts_name ON hosts(host_name);
 
 -- Listings
 CREATE TABLE IF NOT EXISTS listings (
     listing_id SERIAL PRIMARY KEY,
-    listing_cid TEXT NOT NULL,
+    listing_cid TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     host_id INT NOT NULL REFERENCES hosts(host_id),
@@ -62,12 +70,17 @@ CREATE TABLE IF NOT EXISTS listings (
     number_of_reviews INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_listings_host_id ON listings(host_id);
+CREATE INDEX IF NOT EXISTS idx_listings_location_id ON listings(location_id);
+CREATE INDEX IF NOT EXISTS idx_listings_lat_long ON listings(latitude, longitude);
 
 -- Reviews
 CREATE TABLE IF NOT EXISTS reviews (
     review_id SERIAL PRIMARY KEY,
-    review_cid TEXT NOT NULL,
+    review_cid TEXT UNIQUE NOT NULL,
     listing_id INT NOT NULL REFERENCES listings(listing_id),
     date DATE NOT NULL,
     reviewer_id TEXT NOT NULL,
@@ -75,22 +88,30 @@ CREATE TABLE IF NOT EXISTS reviews (
     comments TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_reviews_listing_id ON reviews(listing_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_date ON reviews(date);
 
 -- Amenities
 CREATE TABLE IF NOT EXISTS amenities (
     amenity_id SERIAL PRIMARY KEY,
-    amenity_name TEXT NOT NULL,
+    amenity_name TEXT UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_amenities_name ON amenities(amenity_name);
 
 -- Listing Amenities
 CREATE TABLE IF NOT EXISTS listing_amenities (
     listing_id INT NOT NULL REFERENCES listings(listing_id),
     amenity_id INT NOT NULL REFERENCES amenities(amenity_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (listing_id, amenity_id)
 );
 
@@ -103,6 +124,10 @@ CREATE TABLE IF NOT EXISTS availability (
     maximum_nights INT DEFAULT 365,
     price FLOAT CHECK(price >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (listing_id, date)
 );
+
+CREATE INDEX IF NOT EXISTS idx_availability_listing_id ON availability(listing_id);
+CREATE INDEX IF NOT EXISTS idx_availability_date ON availability(date);
