@@ -1,4 +1,35 @@
--- DB: PostgreSQL
+-- DataBase Type: PostgreSQL
+-- Hosted in: localhost:5432
+
+----------------------------------------------------------------------------------
+
+-- Bronze Schema
+CREATE SCHEMA IF NOT EXISTS bronze;
+
+-- Bronze Tables
+
+-- Listings Raw Data
+CREATE TABLE IF NOT EXISTS bronze.bnb_raw_listings (
+    id SERIAL PRIMARY KEY,
+    raw_data JSONB NOT NULL,
+    ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Reviews Raw Data
+CREATE TABLE IF NOT EXISTS bronze.bnb_raw_reviews (
+    id SERIAL PRIMARY KEY,
+    raw_data JSONB NOT NULL,
+    ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Availability Raw Data
+CREATE TABLE IF NOT EXISTS bronze.bnb_raw_availability (
+    id SERIAL PRIMARY KEY,
+    raw_data JSONB NOT NULL,
+    ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+----------------------------------------------------------------------------------
 
 -- Silver Schema
 CREATE SCHEMA IF NOT EXISTS silver;
@@ -124,6 +155,7 @@ CREATE TABLE IF NOT EXISTS silver.bnb_fact_availability (
 CREATE INDEX IF NOT EXISTS idx_bnb_fact_availability_listing_id ON silver.bnb_fact_availability(listing_id);
 CREATE INDEX IF NOT EXISTS idx_bnb_fact_availability_date ON silver.bnb_fact_availability(date);
 
+----------------------------------------------------------------------------------
 
 -- Gold Schema
 CREATE SCHEMA IF NOT EXISTS gold;
