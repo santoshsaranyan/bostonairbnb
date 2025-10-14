@@ -80,3 +80,21 @@ button[kind="primary"] {
 }
 </style>
 """
+
+html_3 = """
+<style>
+.deck-tooltip {
+    max-width: 300px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    background: white !important;
+    color: black !important;
+    border-radius: 8px !important;
+}
+
+.deck-tooltip b {
+    font-size: 14px;
+}
+</style>
+"""

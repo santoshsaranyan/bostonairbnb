@@ -25,13 +25,9 @@ with st.sidebar:
     st.caption("Data Source: [InsideAirbnb](https://insideairbnb.com)")
     st.caption("Last updated: October 2025")
     
-st.markdown("""
-This Streamlit app demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**.
-""")
+st.markdown(" This Streamlit app demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**. ")
 
-st.info("""
-💡 *Navigate to the various pages using the top-left section of the sidebar*
-""")
+st.info("💡 *Navigate to the various pages using the top-left section of the sidebar* ")
 
 st.subheader("🧱 Pipeline Overview")
 

@@ -114,6 +114,15 @@ def clean_and_split_amenities(text):
     return [a.strip() for a in text.split(',') if a.strip()]
 
 
+def clean_amenities_final(text):
+    
+    # Split by comma, strip whitespace, capitalize each amenity
+    amenities_list = [amenity.strip().capitalize() for amenity in text.split(',')]
+    
+    # Join back with comma + space
+    return ', '.join(amenities_list)
+
+
     
 def match_amenity_to_category_tfidf(amenityToVector, amenityStr, categoryVectors, categoryLabels):
     """ 
@@ -480,6 +489,8 @@ def final_process_listings(listingsDF, hostsDF, locationsNeighborhoodMap):
     listingsDF['description'] = listingsDF['description'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
 
     listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
+    listingsDF['amenities'] = listingsDF['amenities'].apply(clean_amenities_final)
+    
 
     listingsDF['listing_id'] = pd.to_numeric(listingsDF['listing_id'], errors='coerce')
     listingsDF.dropna(subset=['listing_id'], inplace=True)
