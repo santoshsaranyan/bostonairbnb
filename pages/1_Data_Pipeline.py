@@ -1,7 +1,8 @@
 import streamlit as st
 from utilities.datascraper import scrape_data
 from utilities.datapreprocessor import preprocess_data
-from utilities.dbloader import load_data
+from utilities.dbsilverloader import load_silver_data
+from utilities.dbbronzeloader import load_bronze_data
 import utilities.streamlithtml as htmllib
 import os
 
@@ -58,6 +59,8 @@ with st.expander("Step 1: Data Scraper", expanded=True):
     if st.button("Run Scraper", key="step1_btn"):
         with st.spinner("Scraping data..."):
             scrape_data()
+        with st.spinner("Loading raw data..."):
+            load_bronze_data()
         st.session_state.step1_done = True
         st.rerun()
 
@@ -79,7 +82,7 @@ with st.expander("Step 3: DB Loader", expanded=True):
         st.success("✅ Load completed")
     if st.button("Run Loader", key="step3_btn"):
         with st.spinner("Loading data into DB..."):
-            load_data()
+            load_silver_data()
         st.session_state.step3_done = True
         st.rerun()
 

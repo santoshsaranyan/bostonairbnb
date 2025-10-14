@@ -15,7 +15,7 @@ import textwrap
 load_dotenv()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/dbloader.log"),logging.StreamHandler()])
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/dbsilverloader.log"),logging.StreamHandler()])
 
 # Get database credentials from environment variables
 user = os.getenv('user')
@@ -32,13 +32,12 @@ This script reads data from CSV files, and inserts the data into the PostgreSQL 
 It uses SQLAlchemy for help with database operations and pandas for data manipulation.
 """
 
-def load_data() -> None:
+def load_silver_data() -> None:
     
     start = time.time()
     
     # Creates a connection to a PostgreSQL database.
     connectionStr = f'postgresql+psycopg2://{user}:{password}@postgres:5432/{db_name}'
-    print(connectionStr)
     PostgreSQLEngine = create_engine(connectionStr)
     logging.info("Connected to the PostgreSQL database successfully.")
     
@@ -153,4 +152,4 @@ def insert_data_to_table(engine) -> None:
     
 
 if __name__ == "__main__":
-    load_data() 
+    load_silver_data() 
