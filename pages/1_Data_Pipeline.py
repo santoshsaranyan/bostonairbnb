@@ -59,8 +59,6 @@ with st.expander("Step 1: Data Scraper", expanded=True):
     if st.button("Run Scraper", key="step1_btn"):
         with st.spinner("Scraping data..."):
             scrape_data()
-        with st.spinner("Loading raw data..."):
-            load_bronze_data()
         st.session_state.step1_done = True
         st.rerun()
 
@@ -81,7 +79,9 @@ with st.expander("Step 3: DB Loader", expanded=True):
     if st.session_state.step3_done:
         st.success("✅ Load completed")
     if st.button("Run Loader", key="step3_btn"):
-        with st.spinner("Loading data into DB..."):
+        with st.spinner("Loading raw data into DB..."):
+            load_bronze_data()
+        with st.spinner("Loading cleaned data into DB..."):
             load_silver_data()
         st.session_state.step3_done = True
         st.rerun()

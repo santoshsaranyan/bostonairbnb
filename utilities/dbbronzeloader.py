@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sqlalchemy import create_engine, text
 import logging
 from dotenv import load_dotenv
@@ -62,7 +63,28 @@ def read_data(filePath: str) -> pd.DataFrame:
     except Exception as e:
         logging.info(f"Error reading the file {filePath}: {e}")
         return pd.DataFrame() 
-
+    
+    
+def row_to_json_safe(row):
+    """
+    Convert a pandas row to a JSON string safely for PostgreSQL JSONB.
+    - Replaces NaN/NaT/Inf with None (→ JSON null)
+    - Converts numpy types to native Python types
+    """
+    row_dict = row.to_dict()
+    safe_dict = {}
+    for k, v in row_dict.items():
+        if pd.isna(v) or v in [np.inf, -np.inf]:
+            safe_dict[k] = None
+        elif isinstance(v, (np.integer, np.int32, np.int64)):
+            safe_dict[k] = int(v)
+        elif isinstance(v, (np.floating, np.float32, np.float64)):
+            safe_dict[k] = float(v)
+        elif isinstance(v, np.bool_):
+            safe_dict[k] = bool(v)
+        else:
+            safe_dict[k] = v
+    return json.dumps(safe_dict)
 
 
 def insert_data_to_table(engine) -> None:
@@ -83,7 +105,7 @@ def insert_data_to_table(engine) -> None:
             conn.execute(text("TRUNCATE TABLE bronze.bnb_raw_listings RESTART IDENTITY CASCADE;"))
             conn.commit()
         listings_prepared = listings_df.copy()
-        listings_prepared["raw_data"] = listings_prepared.apply(lambda x: json.dumps(x.to_dict()), axis=1)
+        listings_prepared["raw_data"] = listings_prepared.apply(row_to_json_safe, axis=1)
         listings_prepared = listings_prepared[["raw_data"]]
         listings_prepared.to_sql('bnb_raw_listings', con=engine, schema='bronze', if_exists='append', index=False)
         logging.info("Listings data truncated and inserted successfully.")
@@ -93,7 +115,7 @@ def insert_data_to_table(engine) -> None:
             conn.execute(text("TRUNCATE TABLE bronze.bnb_raw_reviews RESTART IDENTITY CASCADE;"))
             conn.commit()
         reviews_prepared = reviews_df.copy()
-        reviews_prepared["raw_data"] = reviews_prepared.apply(lambda x: json.dumps(x.to_dict()), axis=1)
+        reviews_prepared["raw_data"] = reviews_prepared.apply(row_to_json_safe, axis=1)
         reviews_prepared = reviews_prepared[["raw_data"]]
         reviews_prepared.to_sql('bnb_raw_reviews', con=engine, schema='bronze', if_exists='append', index=False)
         logging.info("Reviews data truncated and inserted successfully.")
@@ -103,7 +125,7 @@ def insert_data_to_table(engine) -> None:
             conn.execute(text("TRUNCATE TABLE bronze.bnb_raw_availability RESTART IDENTITY CASCADE;"))
             conn.commit()
         calendar_prepared = calendar_df.copy()
-        calendar_prepared["raw_data"] = calendar_prepared.apply(lambda x: json.dumps(x.to_dict()), axis=1)
+        calendar_prepared["raw_data"] = calendar_prepared.apply(row_to_json_safe, axis=1)
         calendar_prepared = calendar_prepared[["raw_data"]]
         calendar_prepared.to_sql('bnb_raw_availability', con=engine, schema='bronze', if_exists='append', index=False)
         logging.info("Availability data truncated and inserted successfully.")
