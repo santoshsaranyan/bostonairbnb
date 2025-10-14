@@ -39,7 +39,7 @@ def load_data() -> None:
     # Creates a connection to a PostgreSQL database.
     connectionStr = f'postgresql+psycopg2://{user}:{password}@postgres:5432/{db_name}'
     print(connectionStr)
-    PostgreSQLEngine = create_engine(connectionStr, echo=True)
+    PostgreSQLEngine = create_engine(connectionStr)
     logging.info("Connected to the PostgreSQL database successfully.")
     
     # Read data from CSV files and insert it into the database.
@@ -99,53 +99,53 @@ def insert_data_to_table(engine) -> None:
     logging.info("Inserting data into the database...")
     if not locationsData.empty:
         with engine.connect() as conn:
-            conn.execute(text("TRUNCATE TABLE locations RESTART IDENTITY CASCADE;"))
+            conn.execute(text("TRUNCATE TABLE silver.bnb_dim_locations RESTART IDENTITY CASCADE;"))
             conn.commit()
-        locationsData.to_sql('locations', con=engine, if_exists='append', index=False)
+        locationsData.to_sql('bnb_dim_locations', con=engine, schema='silver', if_exists='append', index=False)
         logging.info("Locations data truncated and inserted successfully.")
         
     if not hostsData.empty:
         with engine.connect() as conn:
-            conn.execute(text("TRUNCATE TABLE hosts RESTART IDENTITY CASCADE;"))
+            conn.execute(text("TRUNCATE TABLE silver.bnb_dim_hosts RESTART IDENTITY CASCADE;"))
             conn.commit()
-        hostsData.to_sql('hosts', con=engine, if_exists='append', index=False)
+        hostsData.to_sql('bnb_dim_hosts', con=engine, schema='silver', if_exists='append', index=False)
         logging.info("Hosts data truncated and inserted successfully.")
         
         
     if not listingsData.empty:
         with engine.connect() as conn:
-            conn.execute(text("TRUNCATE TABLE listings RESTART IDENTITY CASCADE;"))
+            conn.execute(text("TRUNCATE TABLE silver.bnb_dim_listings RESTART IDENTITY CASCADE;"))
             conn.commit()
-        listingsData.to_sql('listings', con=engine, if_exists='append', index=False)
+        listingsData.to_sql('bnb_dim_listings', con=engine, schema='silver', if_exists='append', index=False)
         logging.info("Listings data truncated and inserted successfully.")
         
     if not reviewsData.empty:
         with engine.connect() as conn:
-            conn.execute(text("TRUNCATE TABLE reviews RESTART IDENTITY CASCADE;"))
+            conn.execute(text("TRUNCATE TABLE silver.bnb_fact_reviews RESTART IDENTITY CASCADE;"))
             conn.commit()
-        reviewsData.to_sql('reviews', con=engine, if_exists='append', index=False)
+        reviewsData.to_sql('bnb_fact_reviews', con=engine, schema='silver', if_exists='append', index=False)
         logging.info("Reviews data truncated and inserted successfully.")
         
     if not amenitiesData.empty:
         with engine.connect() as conn:
-            conn.execute(text("TRUNCATE TABLE amenities RESTART IDENTITY CASCADE;"))
+            conn.execute(text("TRUNCATE TABLE silver.bnb_dim_amenities RESTART IDENTITY CASCADE;"))
             conn.commit()
-        amenitiesData.to_sql('amenities', con=engine, if_exists='append', index=False)
+        amenitiesData.to_sql('bnb_dim_amenities', con=engine, schema='silver', if_exists='append', index=False)
         logging.info("Amenities data truncated and inserted successfully.")
         
         
     if not availabilityData.empty:
         with engine.connect() as conn:
-            conn.execute(text("TRUNCATE TABLE availability RESTART IDENTITY CASCADE;"))
+            conn.execute(text("TRUNCATE TABLE silver.bnb_fact_availability RESTART IDENTITY CASCADE;"))
             conn.commit()
-        availabilityData.to_sql('availability', con=engine, if_exists='append', index=False)
+        availabilityData.to_sql('bnb_fact_availability', con=engine, schema='silver', if_exists='append', index=False)
         logging.info("Availability data truncated and inserted successfully.")
     
     if not listingAmenitiesData.empty:
         with engine.connect() as conn:
-            conn.execute(text("TRUNCATE TABLE listing_amenities RESTART IDENTITY CASCADE;"))
+            conn.execute(text("TRUNCATE TABLE silver.bnb_br_listing_amenities RESTART IDENTITY CASCADE;"))
             conn.commit()
-        listingAmenitiesData.to_sql('listing_amenities', con=engine, if_exists='append', index=False)
+        listingAmenitiesData.to_sql('bnb_br_listing_amenities', con=engine, schema='silver', if_exists='append', index=False)
         logging.info("Listing amenities truncated and data inserted successfully.")
         
     else:
