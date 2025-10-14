@@ -10,23 +10,23 @@ CREATE SCHEMA IF NOT EXISTS bronze;
 
 -- Listings Raw Data
 CREATE TABLE IF NOT EXISTS bronze.bnb_raw_listings (
-    id SERIAL PRIMARY KEY,
+    raw_listings_id SERIAL PRIMARY KEY,
     raw_data JSONB NOT NULL,
-    ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Reviews Raw Data
 CREATE TABLE IF NOT EXISTS bronze.bnb_raw_reviews (
-    id SERIAL PRIMARY KEY,
+    raw_reviews_id SERIAL PRIMARY KEY,
     raw_data JSONB NOT NULL,
-    ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Availability Raw Data
 CREATE TABLE IF NOT EXISTS bronze.bnb_raw_availability (
-    id SERIAL PRIMARY KEY,
+    raw_availability_id SERIAL PRIMARY KEY,
     raw_data JSONB NOT NULL,
-    ingestion_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ----------------------------------------------------------------------------------
