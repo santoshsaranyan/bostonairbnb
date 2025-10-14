@@ -53,12 +53,12 @@ CREATE TABLE IF NOT EXISTS silver.bnb_dim_hosts (
     host_cid TEXT UNIQUE NOT NULL,
     host_name TEXT NOT NULL,
     host_url TEXT NOT NULL,
-    host_since TEXT,
+    host_since DATE,
     location_id INT NOT NULL REFERENCES silver.bnb_dim_locations(location_id),
     host_about TEXT,
     host_response_time TEXT,
-    host_response_rate FLOAT CHECK(host_response_rate >= 0 AND host_response_rate <= 100),
-    host_acceptance_rate FLOAT CHECK(host_acceptance_rate >= 0 AND host_acceptance_rate <= 100),
+    host_response_rate NUMERIC(5,2) CHECK(host_response_rate >= 0 AND host_response_rate <= 100),
+    host_acceptance_rate NUMERIC(5,2) CHECK(host_acceptance_rate >= 0 AND host_acceptance_rate <= 100),
     host_is_superhost BOOLEAN,
     host_thumbnail_url TEXT,
     host_picture_url TEXT,
@@ -87,19 +87,19 @@ CREATE TABLE IF NOT EXISTS silver.bnb_dim_listings (
     property_type TEXT,
     room_type TEXT,
     accommodates INT,
-    bathrooms FLOAT,
+    bathrooms NUMERIC(3,1),
     bathroom_type TEXT,
     bedrooms INT,
     beds INT,
     amenities TEXT,
     license TEXT,
-    overall_rating FLOAT CHECK(overall_rating >= 0 AND overall_rating <= 5),
-    accuracy_rating FLOAT CHECK(accuracy_rating >= 0 AND accuracy_rating <= 5),
-    cleanliness_rating FLOAT CHECK(cleanliness_rating >= 0 AND cleanliness_rating <= 5),
-    checkin_rating FLOAT CHECK(checkin_rating >= 0 AND checkin_rating <= 5),
-    communication_rating FLOAT CHECK(communication_rating >= 0 AND communication_rating <= 5),
-    location_rating FLOAT CHECK(location_rating >= 0 AND location_rating <= 5),
-    value_rating FLOAT CHECK(value_rating >= 0 AND value_rating <= 5),
+    overall_rating NUMERIC(2,1) CHECK(overall_rating >= 0 AND overall_rating <= 5),
+    accuracy_rating NUMERIC(2,1) CHECK(accuracy_rating >= 0 AND accuracy_rating <= 5),
+    cleanliness_rating NUMERIC(2,1) CHECK(cleanliness_rating >= 0 AND cleanliness_rating <= 5),
+    checkin_rating NUMERIC(2,1) CHECK(checkin_rating >= 0 AND checkin_rating <= 5),
+    communication_rating NUMERIC(2,1) CHECK(communication_rating >= 0 AND communication_rating <= 5),
+    location_rating NUMERIC(2,1) CHECK(location_rating >= 0 AND location_rating <= 5),
+    value_rating NUMERIC(2,1) CHECK(value_rating >= 0 AND value_rating <= 5),
     number_of_reviews INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS silver.bnb_fact_availability (
     available BOOLEAN NOT NULL,
     minimum_nights INT DEFAULT 1,
     maximum_nights INT DEFAULT 365,
-    price FLOAT CHECK(price >= 0),
+    price NUMERIC(10,2) CHECK(price >= 0),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (listing_id, date)
 );
@@ -187,3 +187,79 @@ LEFT JOIN silver.bnb_dim_hosts as h
 ON l.host_id = h.host_id
 LEFT JOIN silver.bnb_dim_locations as lc
 ON l.location_id = lc.location_id;
+
+
+CREATE OR REPLACE VIEW gold.vw_host_summary AS
+SELECT 
+	h.host_id,
+	h.host_name as "Host Name",
+	h.host_since as "Host Since",
+	h.host_total_listings_count as "Host Listings Count",
+	h.host_is_superhost as "Superhost Status",
+	h.host_response_rate as "Host Response Rate",
+	h.host_acceptance_rate as "Host Acceptance Rate",
+	ROUND(lh.overall_rating,1) as "Overall Rating",
+	lh.number_of_reviews as "Number of Reviews"
+FROM silver.bnb_dim_hosts as h
+LEFT JOIN (
+	SELECT 
+		l.host_id,
+		AVG(l.overall_rating) as overall_rating,
+		SUM(l.number_of_reviews) as number_of_reviews
+	FROM silver.bnb_dim_listings as l
+	GROUP BY host_id
+	) as lh
+ON h.host_id = lh.host_id;
+
+
+CREATE OR REPLACE VIEW gold.vw_review_activity AS
+WITH review_counts AS (
+    SELECT
+        TO_CHAR(r.date, 'YYYY-MM') AS review_month,
+        l.listing_id,
+        lc.neighborhood,
+        l.host_id
+    FROM silver.bnb_fact_reviews r
+    JOIN silver.bnb_dim_listings l ON r.listing_id = l.listing_id
+    JOIN silver.bnb_dim_locations lc ON l.location_id = lc.location_id
+),
+neighborhood_top AS (
+	SELECT
+		review_month,
+		neighborhood,
+		COUNT(*) AS review_count,
+		ROW_NUMBER() OVER (PARTITION BY review_month ORDER BY COUNT(*) DESC) AS ranknum
+	FROM review_counts
+	GROUP BY review_month, neighborhood
+),
+host_top AS (
+	SELECT
+		review_month,
+		host_id,
+		COUNT(*) AS review_count,
+		ROW_NUMBER() OVER (PARTITION BY review_month ORDER BY COUNT(*) DESC) AS ranknum
+	FROM review_counts
+	GROUP BY review_month, host_id
+),
+monthly_summary AS (
+    SELECT
+        review_month,
+        COUNT(*) AS total_reviews,
+        COUNT(DISTINCT listing_id) AS distinct_listings_reviewed
+    FROM review_counts
+    GROUP BY review_month
+)
+SELECT 
+	ms.review_month as "Review Month",
+	nt.neighborhood as "Most Reviewed Neighborhood",
+	h.host_name as "Most Reviewed Host",
+	ms.total_reviews as "Reviews",
+	ms.distinct_listings_reviewed as "Unique Listings"
+FROM monthly_summary as ms
+LEFT JOIN neighborhood_top as nt
+ON ms.review_month = nt.review_month and nt.ranknum = 1
+LEFT JOIN host_top as ht
+ON ms.review_month = ht.review_month and ht.ranknum = 1
+LEFT JOIN silver.bnb_dim_hosts as h
+ON ht.host_id = h.host_id
+ORDER BY "Review Month";
