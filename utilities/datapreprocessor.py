@@ -639,6 +639,8 @@ def preprocess_calendar_data(listingsCIDMap):
 
     calendarData['price'] = calendarData['price'].replace('[\$,]', '', regex=True).astype(float) # Removes dollar sign
     
+    calendarData['price'] = calendarData['price'].fillna(0.0)
+    
     calendarData.dropna(subset=['date', 'listing_id'], inplace=True)
     
     return calendarData
