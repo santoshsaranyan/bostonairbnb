@@ -1,9 +1,5 @@
 import streamlit as st
-from utilities.datascraper import scrape_data
-from utilities.datapreprocessor import preprocess_data
-from utilities.dbloader import load_data
 import utilities.streamlithtml as htmllib
-import os
 
 st.set_page_config(page_title="Boston AirBnB Data Pipeline", layout="wide", page_icon="🏠")
 
