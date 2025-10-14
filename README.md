@@ -1,9 +1,8 @@
 *[This Project is a Work in Progress]*
 # Analysis of Boston Airbnb data
 
-### 2025-10-06 Progress Update
-- Switched to PostgreSQL from MySQL
-- Added Docker Compose to have Postgres run in a container
+### 2025-10-14 Progress Update
+- Switched to a Medallion (Bronze, Silver, Gold) Data Warehouse Architecture
 
 ### Instructions to run the code:
 - Install Docker Desktop (https://www.docker.com/products/docker-desktop/)
