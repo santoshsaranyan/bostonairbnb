@@ -3,7 +3,7 @@ from utilities.datascraper import scrape_data
 from utilities.datapreprocessor import preprocess_data
 from utilities.dbsilverloader import load_silver_data
 from utilities.dbbronzeloader import load_bronze_data
-from utilities.dbviewrefresh import refresh_gold_materialized_views
+from utilities.dbgoldrefresh import refresh_gold_materialized_views
 import utilities.streamlithtml as htmllib
 import os
 
