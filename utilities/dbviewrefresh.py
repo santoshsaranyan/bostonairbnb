@@ -34,8 +34,8 @@ def refresh_gold_materialized_views() -> None:
         "gold.mv_availability_trend"
     ]
     
-    # Refresh views one by one
-    with engine.begin() as conn:  # ensures transaction safety
+    # Refresh views
+    with engine.begin() as conn:
         for mv in materialized_views:
             conn.execute(text(f"REFRESH MATERIALIZED VIEW {mv};"))
             logging.info(f"Refreshed materialized view: {mv}")
