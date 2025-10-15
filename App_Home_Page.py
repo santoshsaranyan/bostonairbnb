@@ -1,9 +1,9 @@
 import streamlit as st
 import utilities.streamlithtml as htmllib
 
-st.set_page_config(page_title="Boston AirBnB Data Pipeline", layout="wide", page_icon="🏠")
+st.set_page_config(page_title="Boston BnB Insights App", layout="wide", page_icon="🏠")
 
-st.title("🏘️ Welcome to the Boston BnB App!")
+st.title("🏘️ Welcome to the Boston BnB Insights App!")
 
 with st.sidebar:
     st.image("https://t3.ftcdn.net/jpg/05/89/24/50/360_F_589245011_2eyvpGgTRGZT3Hw4ScUj9QPwvOLp3XsQ.jpg", width=150)
@@ -19,7 +19,7 @@ with st.sidebar:
     st.divider()
 
     st.caption("Data Source: [InsideAirbnb](https://insideairbnb.com)")
-    st.caption("Last updated: October 2025")
+    st.caption("App Last updated: October 2025")
     
 st.markdown(" This Streamlit app demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**. ")
 
