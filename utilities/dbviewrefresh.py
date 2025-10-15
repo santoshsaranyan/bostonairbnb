@@ -42,7 +42,7 @@ def refresh_gold_materialized_views() -> None:
                 logging.info(f"Refreshed materialized view: {mv}")
                 
             except Exception as e:
-                logging.error(f"Failed to refresh {mv}: {e}")
+                logging.info(f"Failed to refresh {mv}: {e}")
     
     end = time.time()
     logging.info(f"All materialized views refreshed in {end - start:.2f} seconds.")
