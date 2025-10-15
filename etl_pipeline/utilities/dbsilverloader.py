@@ -8,10 +8,8 @@ import time
 import textwrap
 
 # Set the path to the .env file
-#env_path = os.path.join(os.path.dirname(__file__), '.env')
 
 # Load the environment variables from the .env file
-#load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
 # Configure logging
