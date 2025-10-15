@@ -3,6 +3,7 @@ from utilities.datascraper import scrape_data
 from utilities.datapreprocessor import preprocess_data
 from utilities.dbsilverloader import load_silver_data
 from utilities.dbbronzeloader import load_bronze_data
+from utilities.dbviewrefresh import refresh_gold_materialized_views
 import utilities.streamlithtml as htmllib
 import os
 
@@ -83,6 +84,8 @@ with st.expander("Step 3: DB Loader", expanded=True):
             load_bronze_data()
         with st.spinner("Loading cleaned data into DB..."):
             load_silver_data()
+        with st.spinner("Refreshing Gold Materialized Views..."):
+            refresh_gold_materialized_views()
         st.session_state.step3_done = True
         st.rerun()
 
