@@ -27,56 +27,48 @@ st.markdown(htmllib.html_2, unsafe_allow_html=True)
 st.title("🧱 Data Pipeline Verification")
 st.markdown("Verify that the pipeline tables/views exist and contain data.")
 
-# Step 1: Bronze Tables
-with st.expander("Step 1: Bronze Tables", expanded=True):
-    bronze_tables = ["listings", "reviews"]  # Replace with actual bronze table names
+# Function to check tables/views for a given step
+def check_step(items, schema, step_key):
     all_ok = True
-    for table in bronze_tables:
-        exists = check_table_exists(table, "bronze")
-        has_data = check_table_has_data(table, "bronze") if exists else False
+    for item in items:
+        exists = check_table_exists(item, schema)
+        has_data = check_table_has_data(item, schema) if exists else False
         if exists and has_data:
-            st.success(f"✅ Bronze table '{table}' exists and contains data")
+            st.success(f"✅ {schema.capitalize()} '{item}' exists and contains data")
         elif exists:
-            st.warning(f"⚠️ Bronze table '{table}' exists but is empty")
+            st.warning(f"⚠️ {schema.capitalize()} '{item}' exists but is empty")
             all_ok = False
         else:
-            st.error(f"❌ Bronze table '{table}' does not exist")
+            st.error(f"❌ {schema.capitalize()} '{item}' does not exist")
             all_ok = False
-    st.session_state.step1_done = all_ok
+    st.session_state[step_key] = all_ok
+
+# Step 1: Bronze Tables
+with st.expander("Step 1: Bronze Tables", expanded=True):
+    bronze_tables = ["bnb_raw_listings", "bnb_raw_reviews", "bnb_raw_availability"] 
+    if st.session_state.step1_done:
+        check_step(bronze_tables, "bronze", "step1_done")
+    if st.button("Check Bronze Tables", key="step1_btn"):
+        check_step(bronze_tables, "bronze", "step1_done")
+        st.rerun()
 
 # Step 2: Silver Tables / Views
 with st.expander("Step 2: Silver Tables", expanded=True):
-    silver_tables = ["listings_summary", "reviews_summary"]  # Replace with actual silver tables/views
-    all_ok = True
-    for table in silver_tables:
-        exists = check_table_exists(table, "silver")
-        has_data = check_table_has_data(table, "silver") if exists else False
-        if exists and has_data:
-            st.success(f"✅ Silver table/view '{table}' exists and contains data")
-        elif exists:
-            st.warning(f"⚠️ Silver table/view '{table}' exists but is empty")
-            all_ok = False
-        else:
-            st.error(f"❌ Silver table/view '{table}' does not exist")
-            all_ok = False
-    st.session_state.step2_done = all_ok
+    silver_tables = ["bnb_dim_listings", "bnb_dim_hosts", "bnb_fact_reviews","bnb_fact_availability","bnb_dim_locations","bnb_dim_amenities","bnb_br_listing_amenities"]  
+    if st.session_state.step2_done:
+        check_step(silver_tables, "silver", "step2_done")
+    if st.button("Check Silver Tables/Views", key="step2_btn"):
+        check_step(silver_tables, "silver", "step2_done")
+        st.rerun()
 
 # Step 3: Gold Materialized Views
 with st.expander("Step 3: Gold Materialized Views", expanded=True):
-    gold_views = ["mv_listing_overview", "mv_neighborhood_summary"]  # Replace with actual gold views
-    all_ok = True
-    for view in gold_views:
-        exists = check_table_exists(view, "gold")
-        has_data = check_table_has_data(view, "gold") if exists else False
-        if exists and has_data:
-            st.success(f"✅ Gold materialized view '{view}' exists and contains data")
-        elif exists:
-            st.warning(f"⚠️ Gold materialized view '{view}' exists but is empty")
-            all_ok = False
-        else:
-            st.error(f"❌ Gold materialized view '{view}' does not exist")
-            all_ok = False
-    st.session_state.step3_done = all_ok
+    gold_views = ["mv_listing_overview", "mv_host_summary", "mv_review_activity","mv_neighborhood_summary","mv_amenity_summary","mv_availability_summary","mv_availability_trend"] 
+    if st.session_state.step3_done:
+        check_step(gold_views, "gold", "step3_done")
+    if st.button("Check Gold Materialized Views", key="step3_btn"):
+        check_step(gold_views, "gold", "step3_done")
+        st.rerun()
 
 # Progress Bar
 completed = sum([
