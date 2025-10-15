@@ -8,7 +8,7 @@ import os
 load_dotenv()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/dbsilverloader.log"),logging.StreamHandler()])
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/dbrefreshview.log"),logging.StreamHandler()])
 
 # Get database credentials from environment variables
 user = os.getenv('user')
