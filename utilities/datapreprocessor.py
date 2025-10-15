@@ -488,6 +488,13 @@ def final_process_listings(listingsDF, hostsDF, locationsNeighborhoodMap):
     listingsDF['description'] = listingsDF['description'].astype(str).replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True).str.strip()
     listingsDF['description'] = listingsDF['description'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
 
+    listingsDF['neighborhood_overview'] = listingsDF['neighborhood_overview'].astype(str).replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True).str.strip()
+    listingsDF['neighborhood_overview'] = listingsDF['neighborhood_overview'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
+    
+    listingsDF['name'] = listingsDF['name'].fillna('No listing name given')
+    listingsDF['name'] = listingsDF['name'].astype(str).replace({r'\r\n': ' ', r'\r': ' ', r'\n': ' '}, regex=True).str.strip()
+    listingsDF['name'] = listingsDF['name'].apply(lambda x: x.encode('utf-8', 'ignore').decode('utf-8') if isinstance(x, str) else x)
+    
     listingsDF['amenities'] = listingsDF['amenities'].apply(lambda x: ','.join(map(str, x)))
     listingsDF['amenities'] = listingsDF['amenities'].apply(clean_amenities_final)
     
