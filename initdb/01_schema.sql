@@ -1,5 +1,5 @@
 -- DataBase Type: PostgreSQL
--- Hosted in: localhost:5432
+-- Hosted in: Supabase
 
 ----------------------------------------------------------------------------------
 

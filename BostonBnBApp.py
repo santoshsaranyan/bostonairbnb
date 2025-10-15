@@ -41,18 +41,19 @@ st.subheader("📊 Analysis and Visualization")
 st.markdown("""
 Once loaded, the data is used to generate insights and interactive visualizations on:
 
-- Listing prices and availability across neighborhoods  
-- Host activity and response behavior  
-- Seasonal and spatial trends within the Boston short-term rental market  
+   - The distribution and characteristics of Airbnb listings in Boston.
+   - Host performance and review trends over time.
+   - Neighborhood popularity and room type distribution.
+   - Amenities offered and availability trends across listings. 
 """)
 
 st.subheader("⚙️ Technology Stack")
 
 st.markdown("""
-- **Python** - Data scraping, cleaning, and analysis  
-- **PostgreSQL** - Database management  
-- **Docker & Docker Compose** - Containerization  
-- **Streamlit** - Interactive web interface  
+- **Python** - Data scraping, cleaning, and analysis
+- **PostgreSQL** - Database management, hosted in Supabase
+- **Docker** - Containerization for the ETL pipeline, Automated using GitHub Actions
+- **Streamlit** - Interactive web interface, hosted on Streamlit Cloud
 """)
 
 

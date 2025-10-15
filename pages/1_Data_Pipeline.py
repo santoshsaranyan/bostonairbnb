@@ -28,9 +28,8 @@ for step in ["step1_done", "step2_done", "step3_done"]:
 st.markdown(htmllib.html_2, unsafe_allow_html=True)
 
 # Header
-#st.markdown("<div class='pipeline-title'>Data Pipeline</div>", unsafe_allow_html=True)
 st.title("🧱 Data Pipeline")
-st.markdown("<div class='pipeline-sub'>Follow the steps to scrape, preprocess, and load data.</div>", unsafe_allow_html=True)
+st.markdown("Follow the steps to scrape, preprocess, and load data.")
 
 download_folder = "data/downloads"
 if os.path.exists(download_folder) and len(os.listdir(download_folder)) > 0:
