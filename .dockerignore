@@ -10,7 +10,7 @@ data/
 sqlqueries/
 logs/
 .ipynb_checkpoints
-.pdf
+*.pdf
 .html
 .ipynb
 .csv

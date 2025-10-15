@@ -1,5 +1,5 @@
 import streamlit as st
-import streamlit_app.utilities.streamlithtml as htmllib
+import utilities.streamlithtml as htmllib
 
 st.set_page_config(page_title="Boston BnB Insights App", layout="wide", page_icon="🏠")
 

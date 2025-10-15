@@ -1,8 +1,8 @@
-from etl_pipeline.utilities.datascraper import scrape_data
-from etl_pipeline.utilities.datapreprocessor import preprocess_data
-from etl_pipeline.utilities.dbsilverloader import load_silver_data
-from etl_pipeline.utilities.dbbronzeloader import load_bronze_data
-from etl_pipeline.utilities.dbgoldrefresh import refresh_gold_materialized_views
+from utilities.datascraper import scrape_data
+from utilities.datapreprocessor import preprocess_data
+from utilities.dbsilverloader import load_silver_data
+from utilities.dbbronzeloader import load_bronze_data
+from utilities.dbgoldrefresh import refresh_gold_materialized_views
 import logging
 import time
 

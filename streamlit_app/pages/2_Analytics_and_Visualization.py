@@ -1,5 +1,5 @@
 import streamlit as st
-import streamlit_app.utilities.streamlithtml as htmllib
+import utilities.streamlithtml as htmllib
 import os
 import pandas as pd
 import pydeck as pdk
