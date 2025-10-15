@@ -163,7 +163,7 @@ CREATE SCHEMA IF NOT EXISTS gold;
 -- Gold Views
 
 -- Listing Overview View
-CREATE OR REPLACE VIEW gold.vw_listing_overview AS
+CREATE MATERIALIZED VIEW gold.mv_listing_overview AS
 SELECT 
 	l.listing_id, 
 	l.name AS "Listing Name",
@@ -191,7 +191,7 @@ LEFT JOIN silver.bnb_dim_locations AS lc
 ON l.location_id = lc.location_id;
 
 -- Host Summary View
-CREATE OR REPLACE VIEW gold.vw_host_summary AS
+CREATE MATERIALIZED VIEW gold.mv_host_summary AS
 SELECT 
 	h.host_id,
 	h.host_name AS "Host Name",
@@ -214,7 +214,7 @@ LEFT JOIN (
 ON h.host_id = lh.host_id;
 
 -- Review Activity Summary View
-CREATE OR REPLACE VIEW gold.vw_review_activity AS
+CREATE MATERIALIZED VIEW gold.mv_review_activity AS
 WITH review_counts AS (
     SELECT
         TO_CHAR(r.date, 'YYYY-MM') AS review_month,
@@ -265,7 +265,7 @@ ON ht.host_id = h.host_id
 ORDER BY "Review Month";
 
 -- Neighborhood Summary View
-CREATE OR REPLACE VIEW gold.vw_neighborhood_summary AS
+CREATE MATERIALIZED VIEW gold.mv_neighborhood_summary AS
 WITH neighborhood_counts AS (
 	SELECT
 		lc.neighborhood,
@@ -308,7 +308,7 @@ LEFT JOIN top_room_type AS tr
 ON ns.neighborhood = tr.neighborhood and tr.rownum = 1;
 
 -- Amenity Summary View
-CREATE OR REPLACE VIEW gold.vw_amenity_summary AS
+CREATE MATERIALIZED VIEW gold.mv_amenity_summary AS
 WITH amenity_counts AS (
 	SELECT
 		la.amenity_id,
@@ -342,7 +342,7 @@ LEFT JOIN silver.bnb_dim_amenities AS am
 ON ams.amenity_id = am.amenity_id;
 
 -- Availability Summary View
-CREATE OR REPLACE VIEW gold.vw_availability_summary AS
+CREATE MATERIALIZED VIEW gold.mv_availability_summary AS
 SELECT
     a.listing_id,
     l.name AS "Listing Name",
@@ -362,7 +362,7 @@ GROUP BY a.listing_id, l.name, lc.neighborhood
 ORDER BY a.listing_id;
 
 -- Availability Trend View
-CREATE OR REPLACE VIEW gold.vw_availability_trend AS
+CREATE MATERIALIZED VIEW gold.mv_availability_trend AS
 SELECT
     TO_CHAR(a.date,'YYYY-MM') AS "Month",
     lc.neighborhood AS "Neighborhood",
@@ -374,3 +374,34 @@ LEFT JOIN silver.bnb_dim_locations AS lc
   ON l.location_id = lc.location_id
 GROUP BY "Month", lc.neighborhood
 ORDER BY "Month", lc.neighborhood;
+
+-- Indexes for Gold Views
+
+-- Listing Overview View Index
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_listing_overview_listing_id ON gold.mv_listing_overview(listing_id);
+CREATE INDEX IF NOT EXISTS idx_mv_listing_overview_neighborhood ON gold.mv_listing_overview("Neighborhood");
+CREATE INDEX IF NOT EXISTS idx_mv_listing_overview_host_name ON gold.mv_listing_overview("Host Name");
+
+-- Host Summary View Index
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_host_summary_host_id ON gold.mv_host_summary(host_id);
+CREATE INDEX IF NOT EXISTS idx_mv_host_summary_overall_rating ON gold.mv_host_summary("Overall Rating");
+
+-- Review Activity Summary View Index
+CREATE INDEX IF NOT EXISTS idx_mv_review_activity_month ON gold.mv_review_activity("Review Month");
+CREATE INDEX IF NOT EXISTS idx_mv_review_activity_neighborhood ON gold.mv_review_activity("Most Reviewed Neighborhood");
+CREATE INDEX IF NOT EXISTS idx_mv_review_activity_host ON gold.mv_review_activity("Most Reviewed Host");
+
+-- Neighborhood Summary View Index
+CREATE INDEX IF NOT EXISTS idx_mv_neighborhood_summary_neighborhood ON gold.mv_neighborhood_summary("Neighborhood");
+CREATE INDEX IF NOT EXISTS idx_mv_neighborhood_summary_avg_rating ON gold.mv_neighborhood_summary("Average Overall Rating");
+
+-- Amenity Summary View Index
+CREATE INDEX IF NOT EXISTS idx_mv_amenity_summary_amenity ON gold.mv_amenity_summary("Amenity");
+
+-- Availability Summary View Index
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_availability_summary_listing_id ON gold.mv_availability_summary(listing_id);
+CREATE INDEX IF NOT EXISTS idx_mv_availability_summary_neighborhood ON gold.mv_availability_summary("Neighborhood");
+
+-- Availability Trend View Index
+CREATE INDEX IF NOT EXISTS idx_mv_availability_trend_month ON gold.mv_availability_trend("Month");
+CREATE INDEX IF NOT EXISTS idx_mv_availability_trend_neighborhood ON gold.mv_availability_trend("Neighborhood");
