@@ -36,10 +36,6 @@ def load_bronze_data() -> None:
     start = time.time()
     
     # Creates a connection to a PostgreSQL database.
-    logging.info(USER)
-    logging.info(HOST)
-    logging.info(PORT)
-    logging.info(DBNAME)
     connectionStr = f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require'
     PostgreSQLEngine = create_engine(connectionStr)
     logging.info("Connected to the PostgreSQL database successfully.")
