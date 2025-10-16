@@ -3,6 +3,8 @@ This project, consisting of a Streamlit app, demonstrates a complete end-to-end 
 
 You can find the link to the app, hosted on streamlit cloud, here: [Boston BnB App](https://bostonairbnb-dataengineeringproject.streamlit.app)
 
+Note: The link might not work on Safari, try another browser instead.
+
 Refer to the documentations folder for more details about the Data Architecture.
 
 ### ETL Pipeline Overview
