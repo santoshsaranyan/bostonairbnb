@@ -26,8 +26,11 @@ Once loaded, the data is used to generate insights and interactive visualization
 
 ### Technology Stack
 Python - Data scraping, cleaning, and analysis
+
 PostgreSQL - Database management, hosted in Supabase
+
 Docker - Containerization for the ETL pipeline, Automated using GitHub Actions
+
 Streamlit - Interactive web interface, hosted on Streamlit Cloud
 
 ### Instructions to run the code Locally:
