@@ -1,8 +1,4 @@
-*[This Project is a Work in Progress]*
 # Analysis of Boston Airbnb data
-
-### 2025-10-14 Progress Update
-- Switched to a Medallion (Bronze, Silver, Gold) Data Warehouse Architecture
 
 ### Instructions to run the code:
 - Install Docker Desktop (https://www.docker.com/products/docker-desktop/)
@@ -22,3 +18,7 @@ db_name=airbnbdatabase
 
 ### Source for the Dataset
 https://insideairbnb.com
+
+
+### Code Author
+Santosh Saranyan
