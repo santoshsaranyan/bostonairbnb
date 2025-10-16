@@ -1,5 +1,4 @@
 import streamlit as st
-import utilities.streamlithtml as htmllib
 import os
 import pandas as pd
 import pydeck as pdk
@@ -9,11 +8,18 @@ import altair as alt
 
 load_dotenv()
 
-user = os.getenv('user')
-password = os.getenv('password')
-db_name = os.getenv('db_name')
+# Get database credentials from environment variables
+USER = os.getenv("user")
+PASSWORD = os.getenv("password")
+HOST = os.getenv("host")
+PORT = os.getenv("port")
+DBNAME = os.getenv("dbname")
 
-engine = create_engine(f"postgresql+psycopg2://{user}:{password}@postgres:5432/{db_name}")
+# Check if the environment variables are set
+if not USER or not PASSWORD or not DBNAME or not HOST or not PORT:
+    raise ValueError("Database credentials are not set in the .env file.")
+
+engine = create_engine(f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require")
 
 with st.sidebar:
     st.image("https://t3.ftcdn.net/jpg/05/89/24/50/360_F_589245011_2eyvpGgTRGZT3Hw4ScUj9QPwvOLp3XsQ.jpg", width=150)
@@ -26,23 +32,26 @@ with st.sidebar:
     - Neighborhood popularity and room type distribution.
     - Amenities offered and availability trends across listings.
     """)
+    st.divider()
+    st.caption("Data Source: [InsideAirbnb](https://insideairbnb.com)")
+    st.caption("Developed by: [Santosh Saranyan](https://www.linkedin.com/in/santosh-saranyan/)")
+    st.caption("App Last updated: October 2025")
+
     
 @st.cache_data(ttl=600)
 def load_data(view_name):
     with engine.connect() as conn:
         return pd.read_sql(text(f"SELECT * FROM gold.{view_name}"), conn)
 
-st.markdown(htmllib.html_2, unsafe_allow_html=True)
     
 st.title("📊 Analytics and Visualization")
 st.markdown("Explore insights from the Boston Airbnb data")
 
 tab1, tab2, tab3, tab4 = st.tabs(["Listing Overview", "Hosts and Reviews", "Neighborhood Insights", "Amenities and Availability"])
 with tab1:
-    # Load listings
+
     listings = load_data("mv_listing_overview")
 
-    # Filter by nieghborhood
     location_options = listings['Neighborhood'].unique()
     selected_locations = st.multiselect("Filter by Neighborhood", location_options)
     if not selected_locations:
@@ -59,7 +68,6 @@ with tab1:
         st.subheader("Map View of Listings")
         st.markdown("This map visualizes Airbnb listings in Boston. Hover over the points to see details about each listing.")
         
-        # Truncate text for display
         def truncate(text, length=80):
             if pd.isna(text):
                 return "N/A"
@@ -69,7 +77,6 @@ with tab1:
         
         filtered_listings_map.rename(columns={"Listing Name":'name',"Room Type": "room_type", "Neighborhood":'neighborhood', "Reviews":'reviews', "Rating":'rating'}, inplace=True)
 
-        # Scatterplot layer to visualize listings
         scatter_layer = pdk.Layer(
             "ScatterplotLayer",
             data=filtered_listings_map,
@@ -83,10 +90,25 @@ with tab1:
             highlight_color=[180, 90, 0, 255]       
         )
         
-        st.markdown(htmllib.html_3, unsafe_allow_html=True)
+        st.markdown("""
+        <style>
+        .deck-tooltip {
+            max-width: 300px !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            background: white !important;
+            color: black !important;
+            border-radius: 8px !important;
+        }
 
-        
-        # Tooltip that shows listing details on hover
+        .deck-tooltip b {
+            font-size: 14px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+
         tooltip = {
             "html": """
             <div class="deck-tooltip">
@@ -100,14 +122,12 @@ with tab1:
             "style": {"fontSize": "12px", "color": "black"}  # optional
         }
 
-        # Map view state
         view_state = pdk.ViewState(
             latitude=filtered_listings_map['latitude'].mean(),
             longitude=filtered_listings_map['longitude'].mean(),
             zoom=12
         )
 
-        # Map
         r = pdk.Deck(
             layers=[scatter_layer],
             initial_view_state=view_state,

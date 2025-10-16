@@ -1,4 +1,6 @@
 .env
+.env.etl
+.env.streamlit
 .conda
 .venv
 .venv2

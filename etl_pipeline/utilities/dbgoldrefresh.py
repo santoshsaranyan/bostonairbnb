@@ -11,15 +11,21 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/dbrefreshview.log"),logging.StreamHandler()])
 
 # Get database credentials from environment variables
-user = os.getenv('user')
-password = os.getenv('password')
-db_name = os.getenv('db_name')
+USER = os.getenv("user")
+PASSWORD = os.getenv("password")
+HOST = os.getenv("host")
+PORT = os.getenv("port")
+DBNAME = os.getenv("dbname")
+
+# Check if the environment variables are set
+if not USER or not PASSWORD or not DBNAME or not HOST or not PORT:
+    raise ValueError("Database credentials are not set in the .env file.")
 
 def refresh_gold_materialized_views() -> None:
     start = time.time()
     
     # Create a connection to PostgreSQL
-    connectionStr = f'postgresql+psycopg2://{user}:{password}@postgres:5432/{db_name}'
+    connectionStr = f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require'
     engine = create_engine(connectionStr)
     logging.info("Connected to the PostgreSQL database successfully.")
     

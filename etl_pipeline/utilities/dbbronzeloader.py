@@ -14,12 +14,14 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.FileHandler("logs/dbbronzeloader.log"), logging.StreamHandler()])
 
 # Get database credentials from environment variables
-user = os.getenv('user')
-password = os.getenv('password')
-db_name = os.getenv('db_name')
+USER = os.getenv("user")
+PASSWORD = os.getenv("password")
+HOST = os.getenv("host")
+PORT = os.getenv("port")
+DBNAME = os.getenv("dbname")
 
 # Check if the environment variables are set
-if not user or not password or not db_name:
+if not USER or not PASSWORD or not DBNAME or not HOST or not PORT:
     raise ValueError("Database credentials are not set in the .env file.")
 
 
@@ -34,7 +36,7 @@ def load_bronze_data() -> None:
     start = time.time()
     
     # Creates a connection to a PostgreSQL database.
-    connectionStr = f'postgresql+psycopg2://{user}:{password}@postgres:5432/{db_name}'
+    connectionStr = f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}?sslmode=require'
     PostgreSQLEngine = create_engine(connectionStr)
     logging.info("Connected to the PostgreSQL database successfully.")
     

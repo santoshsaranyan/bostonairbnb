@@ -12,6 +12,8 @@ __pycache__/
 *.geojson
 *.ipynb
 *.html
+*.env.etl
+*.env.streamlit
 archivecode.py
 
 # Distribution / packaging

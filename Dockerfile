@@ -21,4 +21,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY etl_pipeline/ .
 
-CMD ["python", "run_pipeline.py"]
+CMD ["python", "etlpipelinerun.py"]

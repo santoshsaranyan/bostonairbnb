@@ -2,10 +2,5 @@
 base="light"
 primaryColor="#31333F"
 
-[server]
-headless = true
-enableCORS = false
-enableXsrfProtection = true
-
 [client]
 caching = true

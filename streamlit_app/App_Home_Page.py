@@ -1,25 +1,27 @@
 import streamlit as st
-import utilities.streamlithtml as htmllib
 
 st.set_page_config(page_title="Boston BnB Insights App", layout="wide", page_icon="🏠")
 
 st.title("🏘️ Welcome to the Boston BnB Insights App!")
 
 with st.sidebar:
-    st.image("https://t3.ftcdn.net/jpg/05/89/24/50/360_F_589245011_2eyvpGgTRGZT3Hw4ScUj9QPwvOLp3XsQ.jpg", width=150)
-    st.divider()
+   st.image("https://t3.ftcdn.net/jpg/05/89/24/50/360_F_589245011_2eyvpGgTRGZT3Hw4ScUj9QPwvOLp3XsQ.jpg", width=150)
+   st.divider()
 
-    st.header("How to Use")
-    st.markdown("""
-    1. Run each pipeline step in order  
-    2. View processed data and analytics  
-    3. Re-run steps anytime to refresh data
-    """)
+   st.header("How to Use")
+   st.markdown("""
+   1. Run each pipeline step in order  
+   2. View processed data and analytics  
+   3. Re-run steps anytime to refresh data
+   """)
+   
+   st.markdown("View the source code on [GitHub](https://github.com/santoshsaranyan/bostonairbnb)")
 
-    st.divider()
+   st.divider()
 
-    st.caption("Data Source: [InsideAirbnb](https://insideairbnb.com)")
-    st.caption("App Last updated: October 2025")
+   st.caption("Data Source: [InsideAirbnb](https://insideairbnb.com)")
+   st.caption("Developed by: [Santosh Saranyan](https://www.linkedin.com/in/santosh-saranyan/)")
+   st.caption("App Last updated: October 2025")
     
 st.markdown(" This Streamlit app demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**. ")
 
@@ -56,5 +58,3 @@ st.markdown("""
 - **Streamlit** - Interactive web interface, hosted on Streamlit Cloud
 """)
 
-
-st.markdown(htmllib.html_1, unsafe_allow_html=True)
