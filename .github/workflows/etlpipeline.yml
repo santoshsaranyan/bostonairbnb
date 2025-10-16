@@ -26,17 +26,17 @@ jobs:
 
       - name: Run ETL container
         env:
-          user: ${{ secrets.user }}
-          password: ${{ secrets.password }}
-          host: ${{ secrets.host }}
-          port: ${{ secrets.port }}
-          dbname: ${{ secrets.dbname }}
+          DBUSER: ${{ secrets.DBUSER }}
+          DBPASSWORD: ${{ secrets.DBPASSWORD }}
+          DBHOST: ${{ secrets.DBHOST }}
+          DBPORT: ${{ secrets.DBPORT }}
+          DBNAME: ${{ secrets.DBNAME }}
 
         run: |
           docker run --rm \
-            -e user \
-            -e password \
-            -e dbname \
-            -e host \
-            -e port \
+            -e user="$DBUSER" \
+            -e password="$DBPASSWORD" \
+            -e dbname="$DBNAME" \
+            -e host="$DBHOST" \
+            -e port="$DBPORT" \
             monthlyetl
