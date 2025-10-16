@@ -1,4 +1,6 @@
 .env
+.env.etl
+.env.streamlit
 .conda
 .venv
 .venv2
@@ -10,7 +12,7 @@ data/
 sqlqueries/
 logs/
 .ipynb_checkpoints
-.pdf
+*.pdf
 .html
 .ipynb
 .csv

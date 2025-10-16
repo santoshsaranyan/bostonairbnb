@@ -12,6 +12,8 @@ __pycache__/
 *.geojson
 *.ipynb
 *.html
+*.env.etl
+*.env.streamlit
 archivecode.py
 
 # Distribution / packaging
@@ -19,8 +21,10 @@ archivecode.py
 build/
 develop-eggs/
 dist/
+data/
 archive/
 downloads/
+cleaned/
 eggs/
 .eggs/
 lib/

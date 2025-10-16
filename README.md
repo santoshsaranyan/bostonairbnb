@@ -1,10 +1,39 @@
-*[This Project is a Work in Progress]*
 # Analysis of Boston Airbnb data
+This project, consisting of a Streamlit app, demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**. The AirBnB data is stored in a PostgreSQL database which is modelled after a small-scale data warehouse.
 
-### 2025-10-14 Progress Update
-- Switched to a Medallion (Bronze, Silver, Gold) Data Warehouse Architecture
+You can find the link to the app, hosted on streamlit cloud, here: TBA
 
-### Instructions to run the code:
+Refer to the documentations folder for more details about the Data Architecture.
+
+### ETL Pipeline Overview
+The whole ETL process is contained within a Docker container, and automated to run on a monthly schedule using GitHub Actions. The pipeline consists of three main steps:
+
+1. Data Scraping
+Retrieves the latest Boston Airbnb datasets directly from InsideAirbnb, which provides data for the past 12 months updated quarterly.
+2. Data Preprocessing
+Cleans, standardizes, and prepares the data for storage and analysis — handling missing values, formatting columns, and optimizing the dataset for database loading.
+3. Database Loading
+Loads the raw and processed data into a PostgreSQL database (hosted by Supabase) for efficient querying and analytics. Also refreshes the materialized views to ensure up-to-date insights.
+
+### Analysis and Visualization
+Once loaded, the data is used to generate insights and interactive visualizations on:
+
+- The distribution and characteristics of Airbnb listings in Boston.
+- Host performance and review trends over time.
+- Neighborhood popularity and room type distribution.
+- Amenities offered and availability trends across listings.
+
+### Technology Stack
+Python - Data scraping, cleaning, and analysis
+
+PostgreSQL - Database management, hosted in Supabase
+
+Docker - Containerization for the ETL pipeline, Automated using GitHub Actions
+
+Streamlit - Interactive web interface, hosted on Streamlit Cloud
+
+### Instructions to run the code Locally:
+- Switch to Branch feature-local_run and download the code
 - Install Docker Desktop (https://www.docker.com/products/docker-desktop/)
 - (Optional) Install Python (https://www.python.org/downloads/release/python-31011/). Only if you want to run the scripts outside Docker.
 - Create a `.env` file with the required credentials to connect to the database. The `.env` file must have the Username, Password and Database Name. Example of the `.env` file:
@@ -22,3 +51,9 @@ db_name=airbnbdatabase
 
 ### Source for the Dataset
 https://insideairbnb.com
+
+
+### Code Author
+Santosh Saranyan
+
+https://www.linkedin.com/in/santosh-saranyan/
