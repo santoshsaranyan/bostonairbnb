@@ -1,6 +1,6 @@
 *[This Project is a Work in Progress]*
 # Analysis of Boston Airbnb data
-This project consists of a Streamlit app demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**. The AirBnB data is stored in a PostgreSQL database which is modelled after a small-scale data warehouse.
+This project, consisting of a Streamlit app, demonstrates a complete end-to-end **data engineering and analytics pipeline** for Boston Airbnb listings, built using **Python**, **PostgreSQL**, and **Docker**. The AirBnB data is stored in a PostgreSQL database which is modelled after a small-scale data warehouse.
 
 You can find the link to the app, hosted on streamlit cloud, here: TBA
 
