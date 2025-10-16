@@ -1,0 +1,42 @@
+# This is a basic workflow
+
+name: Monthly ETL Pipeline workflow
+
+# Controls when the action will run. 
+on:
+  schedule:
+    - cron: "30 6 1 * *"
+  workflow_dispatch:
+   
+jobs:
+  etl:
+    name: Run Dockerized ETL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t monthlyetl .
+
+      - name: Run ETL container
+        env:
+          user: ${{ secrets.user }}
+          password: ${{ secrets.password }}
+          host: ${{ secrets.host }}
+          port: ${{ secrets.port }}
+          dbname: ${{ secrets.dbname }}
+
+        run: |
+          docker run --rm \
+            -e user \
+            -e password \
+            -e dbname \
+            -e host \
+            -e port \
+            monthlyetl
