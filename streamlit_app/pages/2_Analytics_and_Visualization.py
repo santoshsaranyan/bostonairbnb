@@ -178,6 +178,7 @@ with tab2:
         ).properties(title="Top 15 Hosts by Total Reviews")
         st.altair_chart(bar, use_container_width=True)
         
+        hosts.drop(columns=['Host Display'], inplace=True)
         hosts = hosts.sort_values(by=["Number of Reviews","Overall Rating"], ascending=False).reset_index(drop=True)
         st.subheader("Hosts Data Table")
         st.dataframe(hosts)
