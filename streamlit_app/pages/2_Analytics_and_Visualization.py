@@ -167,7 +167,7 @@ with tab2:
             superhost_ratio = hosts["Superhost Status"].mean() * 100
             st.metric("Superhost %", f"{superhost_ratio:.1f}%")
 
-        hosts.rename(columns={'host_id':'Host ID'})
+        hosts.rename(columns={'host_id':'Host ID'},inplace=True)
         hosts['Host Display'] = hosts['Host Name'] + " (" + hosts['Host ID'].astype(str) + ")"
         top_hosts = hosts.nlargest(15, 'Number of Reviews')
         bar = alt.Chart(top_hosts).mark_bar().encode(
