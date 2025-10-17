@@ -167,12 +167,13 @@ with tab2:
             superhost_ratio = hosts["Superhost Status"].mean() * 100
             st.metric("Superhost %", f"{superhost_ratio:.1f}%")
 
+        hosts['Host Display'] = hosts['Host Name'] + " (" + hosts['Host ID'].astype(str) + ")"
         top_hosts = hosts.nlargest(15, 'Number of Reviews')
         bar = alt.Chart(top_hosts).mark_bar().encode(
             x=alt.X('Number of Reviews:Q'),
-            y=alt.Y('Host Name:N', sort='-x'),
+            y=alt.Y('Host Display:N', sort='-x', title='Host'),
             color=alt.Color('Overall Rating:Q', scale=alt.Scale(scheme='greens')),
-            tooltip=['Host Name', 'Number of Reviews', 'Overall Rating', 'Host Listings Count']
+            tooltip=['Host Name', 'Host ID', 'Number of Reviews', 'Overall Rating', 'Host Listings Count']
         ).properties(title="Top 15 Hosts by Total Reviews")
         st.altair_chart(bar, use_container_width=True)
         
