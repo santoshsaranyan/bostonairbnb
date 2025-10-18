@@ -126,7 +126,7 @@ def insert_data_to_table(engine) -> None:
         with engine.connect() as conn:
             conn.execute(text("TRUNCATE TABLE bronze.bnb_raw_availability RESTART IDENTITY CASCADE;"))
             conn.commit()
-        calendar_prepared = calendar_df.copy()
+        calendar_prepared = calendar_df.head(50).copy() # Limiting to first 50 rows due to DB storage constraints
         calendar_prepared["raw_data"] = calendar_prepared.apply(row_to_json_safe, axis=1)
         calendar_prepared = calendar_prepared[["raw_data"]]
         calendar_prepared.to_sql('bnb_raw_availability', con=engine, schema='bronze', if_exists='append', index=False)
