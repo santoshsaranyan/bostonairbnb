@@ -106,7 +106,7 @@ def insert_data_to_table(engine) -> None:
         with engine.connect() as conn:
             conn.execute(text("TRUNCATE TABLE bronze.bnb_raw_listings RESTART IDENTITY CASCADE;"))
             conn.commit()
-        listings_prepared = listings_df.copy()
+        listings_prepared = listings_df.head(50).copy() # Limiting to first 50 rows due to DB storage constraints
         listings_prepared["raw_data"] = listings_prepared.apply(row_to_json_safe, axis=1)
         listings_prepared = listings_prepared[["raw_data"]]
         listings_prepared.to_sql('bnb_raw_listings', con=engine, schema='bronze', if_exists='append', index=False)
@@ -116,7 +116,7 @@ def insert_data_to_table(engine) -> None:
         with engine.connect() as conn:
             conn.execute(text("TRUNCATE TABLE bronze.bnb_raw_reviews RESTART IDENTITY CASCADE;"))
             conn.commit()
-        reviews_prepared = reviews_df.copy()
+        reviews_prepared = reviews_df.head(50).copy() # Limiting to first 50 rows due to DB storage constraints
         reviews_prepared["raw_data"] = reviews_prepared.apply(row_to_json_safe, axis=1)
         reviews_prepared = reviews_prepared[["raw_data"]]
         reviews_prepared.to_sql('bnb_raw_reviews', con=engine, schema='bronze', if_exists='append', index=False)
