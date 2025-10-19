@@ -21,4 +21,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY etl_pipeline/ .
 
-CMD python datascraper.py && datapreprocessor.py && dbbronzeloader.py && dbsilverloader.py && dbgoldrefresh.py
+CMD ["/bin/sh", "-c", "python datascraper.py && python datapreprocessor.py && python dbbronzeloader.py && python dbsilverloader.py && python dbgoldrefresh.py"]
