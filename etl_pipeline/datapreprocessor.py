@@ -17,6 +17,7 @@ The cleaned data is then saved as CSV files.
 
 def preprocess_data():
     
+    logging.info("Step 2: Preprocessing Data")
     start = time.time()
     
     logging.info("Starting data preprocessing...")

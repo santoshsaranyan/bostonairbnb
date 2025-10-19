@@ -22,6 +22,8 @@ if not USER or not PASSWORD or not DBNAME or not HOST or not PORT:
     raise ValueError("Database credentials are not set in the .env file.")
 
 def refresh_gold_materialized_views() -> None:
+    
+    logging.info("Step 5: Refreshing Gold Materialized Views")
     start = time.time()
     
     # Create a connection to PostgreSQL
