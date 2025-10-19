@@ -33,6 +33,7 @@ for data manipulation. Each row is stored as JSONB in the raw_data column with a
 
 def load_bronze_data() -> None:
     
+    logging.info("Step 3: Loading Bronze Data")
     start = time.time()
     
     # Creates a connection to a PostgreSQL database.

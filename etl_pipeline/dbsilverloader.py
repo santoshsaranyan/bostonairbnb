@@ -34,6 +34,7 @@ It uses SQLAlchemy for help with database operations and pandas for data manipul
 
 def load_silver_data() -> None:
     
+    logging.info("Step 4: Loading Silver Data")
     start = time.time()
     
     # Creates a connection to a PostgreSQL database.

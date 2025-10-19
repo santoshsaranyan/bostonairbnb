@@ -17,6 +17,7 @@ It downloads the relevant CSV files and saves them to the 'data/downloads' direc
 
 def scrape_data():
     
+    logging.info("Step 1: Scraping Data")
     # Define the URL to scrape
     url = "https://insideairbnb.com/get-the-data/"
     fetch_html(url)
@@ -24,7 +25,7 @@ def scrape_data():
     
 def fetch_html(url: str, max_retries: int = 3, backoff_factor: float = 1.0) -> None:
     """
-    Fetches the HTML content of a given URL.
+    Fetches the HTML content of a given URL. Uses BeautifulSoup to parse the HTML and extract data file links.
     
     Parameters:
         url (str): The URL to fetch.
