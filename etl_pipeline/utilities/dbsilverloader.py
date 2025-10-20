@@ -67,7 +67,7 @@ def read_data(filePath: str) -> pd.DataFrame:
         return data
     
     except Exception as e:
-        logging.info(f"Error reading the file: {e}")
+        logging.error(f"Error: Error reading the file: {e}")
         return pd.DataFrame() 
     
     

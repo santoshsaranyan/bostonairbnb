@@ -71,8 +71,14 @@ def read_data(filePath: str) -> pd.DataFrame:
 def row_to_json_safe(row):
     """
     Convert a pandas row to a JSON string safely for PostgreSQL JSONB.
-    - Replaces NaN/NaT/Inf with None (→ JSON null)
+    - Replaces NaN/NaT/Inf with None
     - Converts numpy types to native Python types
+    
+    Parameters:
+        row: pandas Series representing a row.
+    
+    Returns:
+        JSON string representation of the row.
     """
     row_dict = row.to_dict()
     safe_dict = {}

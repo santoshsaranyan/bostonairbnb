@@ -60,10 +60,10 @@ def fetch_html(url: str, max_retries: int = 3, backoff_factor: float = 1.0) -> N
                                 download_file(link)
                                 
                         except Exception as e:
-                            logging.info(f"Error extracting link: {e}")
+                            logging.error(f"Error: Error extracting link: {e}")
                         
                 except Exception as e:
-                    logging.info(f"Error parsing HTML: {e}")
+                    logging.error(f"Error: Error parsing HTML: {e}")
                 
                 break
                         
@@ -77,7 +77,7 @@ def fetch_html(url: str, max_retries: int = 3, backoff_factor: float = 1.0) -> N
                 logging.info(f"Retrying in {delay:.1f} seconds...")
                 time.sleep(delay)
         else:
-            logging.error("Max retries exceeded. Failed to fetch URL.")
+            logging.error("Error: Max retries exceeded. Failed to fetch URL.")
         
         
 def download_file(link: str) -> None:
@@ -106,7 +106,7 @@ def download_file(link: str) -> None:
         logging.info(f"File downloaded and saved to: {filename}")
         
     except Exception as e:
-        logging.info(f"Error downloading file: {e}")
+        logging.error(f"Error: Error downloading file: {e}")
 
     
 if __name__ == "__main__":

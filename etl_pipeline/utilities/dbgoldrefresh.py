@@ -19,7 +19,7 @@ DBNAME = os.getenv("dbname")
 
 # Check if the environment variables are set
 if not USER or not PASSWORD or not DBNAME or not HOST or not PORT:
-    raise ValueError("Database credentials are not set in the .env file.")
+    raise ValueError("Error: Database credentials are not set in the .env file.")
 
 def refresh_gold_materialized_views() -> None:
     
@@ -50,7 +50,7 @@ def refresh_gold_materialized_views() -> None:
                 logging.info(f"Refreshed materialized view: {mv}")
                 
             except Exception as e:
-                logging.info(f"Failed to refresh {mv}: {e}")
+                logging.error(f"Error: Failed to refresh {mv}: {e}")
     
     end = time.time()
     logging.info(f"All materialized views refreshed in {end - start:.2f} seconds.")

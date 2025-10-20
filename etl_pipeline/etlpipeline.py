@@ -42,8 +42,8 @@ def run_with_retry(taskfunction, retries=1, delay=5):
                 logging.info(f"Error: {e}")
                 time.sleep(delay)
             else:
-                logging.info(f"Failed: {taskfunction.__name__} failed after {retries + 1} attempts")
-                logging.info(f"Error: {e}")
+                logging.error(f"Failed: {taskfunction.__name__} failed after {retries + 1} attempts")
+                logging.error(f"Error: {e}")
                 raise
 
 def run_etl_pipeline() -> None:

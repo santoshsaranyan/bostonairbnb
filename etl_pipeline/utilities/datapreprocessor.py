@@ -81,7 +81,7 @@ def save_data(data: pd.DataFrame, filePath: str):
         logging.info(f"Data saved to {filePath}")
         
     except Exception as e:
-        logging.info(f"Error saving the file: {e}")
+        logging.error(f"Error: Error saving the file: {e}")
         
     
 
