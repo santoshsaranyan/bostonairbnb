@@ -56,6 +56,13 @@ with st.sidebar:
     st.caption("App Last updated: October 2025")
 
 st.title("🧱 Data Pipeline Verification")
+
+st.markdown("""The architecture of the end to end pipeline is illustrated below:""")
+try:
+   st.image("images/DataArchitecture.png", caption="Data Architecture")
+except:
+   st.image("streamlit_app/images/DataArchitecture.png", caption="Data Architecture")
+   
 st.markdown("Verify that the pipeline tables/views exist and contain data.")
 
 bronze_tables = ["bnb_raw_listings", "bnb_raw_reviews", "bnb_raw_availability"]

@@ -27,13 +27,6 @@ st.markdown(" This Streamlit app demonstrates a complete end-to-end **data engin
 
 st.info("💡 *Navigate to the various pages using the top-left section of the sidebar* ")
 
-st.subheader("🏛️ Data Architecture")
-st.markdown("""The architecture of the end to end pipeline is illustrated below:""")
-try:
-   st.image("images/DataArchitecture.png", caption="Data Architecture")
-except:
-   st.image("streamlit_app/images/DataArchitecture.png", caption="Data Architecture")
-
 st.subheader("🧱 ETL Pipeline Overview")
 
 st.markdown("""
