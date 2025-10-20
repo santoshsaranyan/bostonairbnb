@@ -21,4 +21,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY etl_pipeline/ .
 
-CMD ["/bin/sh", "-c", "python datascraper.py && python datapreprocessor.py && python dbbronzeloader.py && python dbsilverloader.py && python dbgoldrefresh.py"]
+CMD ["/bin/sh", "-c", "\
+    echo 'Running Task: datascraper.py' && python datascraper.py || { echo 'Failure: Task datascraper.py Failed'; exit 1; } && \
+    echo 'Running Task: datapreprocessor.py' && python datapreprocessor.py || { echo 'Failure: Task datapreprocessor.py Failed'; exit 1; } && \
+    echo 'Running Task: dbbronzeloader.py' && python dbbronzeloader.py || { echo 'Failure: Task dbbronzeloader.py Failed'; exit 1; } && \
+    echo 'Running Task: dbsilverloader.py' && python dbsilverloader.py || { echo 'Failure: Task dbsilverloader.py Failed'; exit 1; } && \
+    echo 'Running Task: dbgoldrefresh.py' && python dbgoldrefresh.py || { echo 'Failure: Task dbgoldrefresh.py Failed'; exit 1; } \
+"]
