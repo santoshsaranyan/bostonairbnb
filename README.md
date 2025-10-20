@@ -3,7 +3,11 @@ This project, consisting of a Streamlit app, demonstrates a complete end-to-end 
 
 You can find the link to the app, hosted on streamlit cloud, here: [Boston BnB App](https://bostonairbnb-dataengineeringproject.streamlit.app)
 
-Note: The link might not work on Safari, try another browser instead.
+Note: The link might not work on Safari, try another browser instead. Also, if the webpage says "The App has gone to sleep", simply press the "Wake it back up" button and it should be back up again.
+
+### Data Architecture Overview
+
+![Data Architecture](https://github.com/santoshsaranyan/bostonairbnb/blob/main/streamlit_app/images/DataArchitecture.png)
 
 Refer to the documentations folder for more details about the Data Architecture.
 
