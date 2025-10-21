@@ -39,7 +39,7 @@ Docker - Containerization for the ETL pipeline, Automated using GitHub Actions
 Streamlit - Interactive web interface, hosted on Streamlit Cloud
 
 ### Instructions to run the code Locally:
-- Switch to Branch feature-local_run and download the code
+- Switch to Branch feature-local_run and clone the repository/download the code
 - Install Docker Desktop (https://www.docker.com/products/docker-desktop/)
 - (Optional) Install Python (https://www.python.org/downloads/release/python-31011/). Only if you want to run the scripts outside Docker.
 - Create a `.env` file with the required credentials to connect to the database. The `.env` file must have the Username, Password and Database Name. Example of the `.env` file:
