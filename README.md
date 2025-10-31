@@ -20,11 +20,11 @@ Refer to the `documentations` folder for more details about the Data Architectur
 ### ETL Pipeline Overview
 The whole ETL process is contained within a Docker container, and automated to run on a monthly schedule using GitHub Actions. The pipeline consists of three main steps:
 
-1. Data Scraping
+1. **Data Scraping:** 
 Retrieves the latest Boston Airbnb datasets directly from InsideAirbnb, which provides data for the past 12 months updated quarterly.
-2. Data Preprocessing
+2. **Data Preprocessing:**
 Cleans, standardizes, and prepares the data for storage and analysis — handling missing values, formatting columns, and optimizing the dataset for database loading.
-3. Database Loading
+3. **Database Loading:**
 Loads the raw and processed data into a PostgreSQL database (hosted by Supabase) for efficient querying and analytics. Also refreshes the materialized views to ensure up-to-date insights.
 
 ### Analysis and Visualization
