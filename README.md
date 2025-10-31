@@ -4,7 +4,7 @@ This project, consisting of a Streamlit app, demonstrates a complete end-to-end 
 You can find the link to the app, hosted on streamlit cloud, here: [Boston BnB App](https://bostonairbnb-dataengineeringproject.streamlit.app)
 
 > **Note:** The link might not work on Safari. If you encounter issues, try opening it in another browser.  
-> If the webpage displays “The App has gone to sleep,” click the “Yes, get it back up” button to restart it.
+> If the webpage displays “The App has gone to sleep,” click the **“Yes, get it back up”** button to restart it.
 
 ### Data Architecture Overview
 
@@ -13,8 +13,8 @@ You can find the link to the app, hosted on streamlit cloud, here: [Boston BnB A
 Refer to the `documentations` folder for more details about the Data Architecture.
 
 > **Note:** Some design choices in this project were made intentionally for learning purposes.  
-> For example, although the source Airbnb datasets were provided as structured gzipped CSV files, the raw data in the **Bronze layer** is stored in PostgreSQL using **JSONB** columns to demonstrate handling of semi-structured data within Postgres.  
-> In a production-grade setup, these raw files would typically reside in an object store (such as **Amazon S3**, **Azure Blob Storage/Data Lake Storage**) or be ingested as staging tables, with the **Bronze layer** referencing those files directly before transformation into the **Silver** and **Gold** layers.
+> For example, although the source Airbnb datasets were provided as structured gzipped CSV files, the raw data in the Bronze layer is stored in PostgreSQL using JSONB columns to demonstrate handling of semi-structured data within Postgres.  
+> In a production-grade setup, these raw files would typically reside in an object store (such as Amazon S3, Azure Blob Storage/Data Lake Storage) or be ingested as staging tables, with the Bronze layer referencing those files directly before transformation into the Silver and Gold layers.
 
 
 ### ETL Pipeline Overview
