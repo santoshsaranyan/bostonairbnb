@@ -9,10 +9,10 @@ You can find the link to the app, hosted on streamlit cloud, here: [Boston BnB A
 ## Technology Stack
 - ![image](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue) - Data scraping, cleaning, and analysis.
 - ![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) - Database management.
-- ![image](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white) - Hosting PostreSQL Database.
+- ![image](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white) - Hosting PostgreSQL Database.
 - ![image](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white) - Containerization for the ETL pipeline.
 - ![image](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white) - Interactive web interface, hosted on Streamlit Cloud.
-- ![image](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white) - Automating ETL pipeline.
+- ![image](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white) - Automating the ETL pipeline.
 
 ## Data Architecture Overview
 
