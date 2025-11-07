@@ -6,7 +6,15 @@ You can find the link to the app, hosted on streamlit cloud, here: [Boston BnB A
 > **Note:** The link might not work on Safari. If you encounter issues, try opening it in another browser.  
 > If the webpage displays “The App has gone to sleep,” click the **“Yes, get it back up”** button to restart it.
 
-### Data Architecture Overview
+## Technology Stack
+- ![image](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue) - Data scraping, cleaning, and analysis.
+- ![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) - Database management.
+- ![image](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white) - Hosting PostreSQL Database.
+- ![image](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white) - Containerization for the ETL pipeline.
+- ![image](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white) - Interactive web interface, hosted on Streamlit Cloud.
+- ![image](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white) - Automating ETL pipeline.
+
+## Data Architecture Overview
 
 ![Data Architecture](https://github.com/santoshsaranyan/bostonairbnb/blob/main/streamlit_app/images/DataArchitecture.png)
 
@@ -17,7 +25,7 @@ Refer to the `documentations` folder for more details about the Data Architectur
 > In a production-grade setup, these raw files would typically reside in an object store (such as Amazon S3, Azure Blob Storage/Data Lake Storage) or be ingested as staging tables, with the Bronze layer referencing those files directly before transformation into the Silver and Gold layers.
 
 
-### ETL Pipeline Overview
+## ETL Pipeline Overview
 The whole ETL process is contained within a Docker container, and automated to run on a monthly schedule using GitHub Actions. The pipeline consists of three main steps:
 
 1. **Data Scraping:** 
@@ -27,7 +35,7 @@ Cleans, standardizes, and prepares the data for storage and analysis — handlin
 3. **Database Loading:**
 Loads the raw and processed data into a PostgreSQL database (hosted by Supabase) for efficient querying and analytics. Also refreshes the materialized views to ensure up-to-date insights.
 
-### Analysis and Visualization
+## Analysis and Visualization
 Once loaded, the data is used to generate insights and interactive visualizations on:
 
 - The distribution and characteristics of Airbnb listings in Boston.
@@ -35,16 +43,7 @@ Once loaded, the data is used to generate insights and interactive visualization
 - Neighborhood popularity and room type distribution.
 - Amenities offered and availability trends across listings.
 
-### Technology Stack
-Python - Data scraping, cleaning, and analysis
-
-PostgreSQL - Database management, hosted in Supabase
-
-Docker - Containerization for the ETL pipeline, Automated using GitHub Actions
-
-Streamlit - Interactive web interface, hosted on Streamlit Cloud
-
-### Instructions to run the code Locally:
+## Instructions to run the code Locally:
 - Switch to Branch feature-local_run and clone the repository/download the code
 - Install Docker Desktop (https://www.docker.com/products/docker-desktop/)
 - (Optional) Install Python (https://www.python.org/downloads/release/python-31011/). Only if you want to run the scripts outside Docker.
@@ -61,11 +60,11 @@ db_name=airbnbdatabase
 - For subsequent runs you can just run: `docker-compose up` to not have to rebuild the images each time if you haven't changed anything.
 
 
-### Source for the Dataset
+## Source for the Dataset
 https://insideairbnb.com
 
 
-### Code Author
+## Code Author
 Santosh Saranyan
 
 https://www.linkedin.com/in/santosh-saranyan/
